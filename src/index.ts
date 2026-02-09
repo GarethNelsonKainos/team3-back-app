@@ -6,8 +6,8 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.json({ message: "Kainos Job Application API"
-  });
+  res.json({ message: "Kainos Job Application API" });
+});
 });
 
 app.listen(port, () => {
