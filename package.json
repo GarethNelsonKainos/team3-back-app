@@ -16,10 +16,10 @@
     "@types/express": "^5.0.6",
     "@types/node": "^24.10.12",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   },
   "dependencies": {
-    "express": "^5.2.1",
-    "vitest": "^4.0.18"
+    "express": "^5.2.1"
   }
 }
