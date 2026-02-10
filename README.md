@@ -38,7 +38,6 @@ This project uses Prisma with PostgreSQL. Follow these steps to set up your data
 - `npm run db:push` - Push schema changes to database (development)
 - `npm run db:migrate` - Create and run migrations
 - `npm run db:studio` - Open Prisma Studio (visual database editor)
-- `npm run db:seed` - Run database seed file
 
 ## Development
 
