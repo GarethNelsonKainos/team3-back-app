@@ -1,0 +1,37 @@
+generator client {
+  provider   = "prisma-client"
+  output     = "../prisma/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model JobRole {
+  jobRoleId    Int       @id @default(autoincrement())
+  roleName     String
+  location     String
+  closingDate  DateTime
+
+  capability   Capability @relation(fields: [capabilityId], references: [capabilityId])
+  capabilityId Int
+
+  band         Band       @relation(fields: [bandId], references: [bandId])
+  bandId       Int
+}
+
+model Capability {
+  capabilityId   Int       @id @default(autoincrement())
+  capabilityName String
+
+  jobRoles       JobRole[]
+}
+
+model Band {
+  bandId   Int       @id @default(autoincrement())
+  bandName String
+
+  jobRoles JobRole[]
+}
+
+
