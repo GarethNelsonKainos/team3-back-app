@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client"
+  output     = "../prisma/generated"
 }
 
 datasource db {
@@ -9,7 +10,7 @@ datasource db {
 model JobRole {
   jobRoleId    Int       @id @default(autoincrement())
   roleName     String
-  location    String
+  locationn    String
   closingDate  DateTime
 
   capability   Capability @relation(fields: [capabilityId], references: [capabilityId])
