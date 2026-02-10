@@ -10,7 +10,7 @@ datasource db {
 model JobRole {
   jobRoleId    Int       @id @default(autoincrement())
   roleName     String
-  location     String
+  location    String
   closingDate  DateTime
 
   capability   Capability @relation(fields: [capabilityId], references: [capabilityId])
