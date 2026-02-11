@@ -19,9 +19,6 @@ jobs:
         run: npm install
 
       - name: Generate Prisma client
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          SCHEMA_NAME: ${{ secrets.SCHEMA_NAME }}
         run: npm run db:generate
 
       - name: Build project
