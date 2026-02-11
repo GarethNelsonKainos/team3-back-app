@@ -8,21 +8,21 @@ on:
     build:
       runs-on: ubuntu-latest
 
-      steps:
-        - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-        - uses: actions/setup-nodev4
-          with:
-            node-version: '25.5.0'
+      - uses: actions/setup-nodev4
+        with:
+          node-version: '25.5.0'
 
-        - name: Install dependencies
-          run: npm install
+      - name: Install dependencies
+        run: npm install
 
-        - name: Build project
-          run: npm run build
+      - name: Build project
+        run: npm run build
 
-        - name: Run tests
-          run: npm run test
+      - name: Run tests
+        run: npm run test
 
-        - name: Run Linter
-          run: npm run lint
+      - name: Run Linter
+        run: npm run lint
