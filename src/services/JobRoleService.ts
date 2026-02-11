@@ -19,4 +19,16 @@ export class JobRoleServices {
 			}),
 		);
 	}
+
+	async getJobRoleById(jobRoleId: number): Promise<JobRoleResponse | null> {
+		const jobRole = await this.jobRoleDao.getJobRoleById(jobRoleId);
+		if (!jobRole) {
+			return null;
+		}
+		return JobRoleMapper({
+			...jobRole,
+			capabilityName: jobRole.capability.capabilityName,
+			bandName: jobRole.band.bandName,
+		});
+	}
 }
