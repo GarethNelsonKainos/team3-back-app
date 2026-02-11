@@ -1,81 +1,98 @@
+import type { Request, Response } from "express";
+import express from "express";
 import supertest from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-
-const findManyMock = vi.fn();
-
-vi.mock("../prisma", () => ({
-	prisma: {
-		jobRole: {
-			findMany: findManyMock,
-		},
-	},
-}));
+import { JobRoleController } from "../controllers/JobRoleController";
+import { JobRoleDao } from "../dao/JobRoleDao";
+import type { PrismaClient } from "../generated/client";
+import { JobRoleServices } from "../services/JobRoleService";
 
 describe("GET /api/job-roles", () => {
+	let mockPrisma: { jobRole: { findMany: ReturnType<typeof vi.fn> } };
+	let app: ReturnType<typeof express>;
+
 	beforeEach(() => {
-		findManyMock.mockReset();
-		process.env.NODE_ENV = "test";
-	});
-
-	it("returns job roles when found", async () => {
-		findManyMock.mockResolvedValue([
-			{
-				jobRoleId: 1,
-				roleName: "Software Engineer",
-				location: "Belfast",
-				closingDate: new Date("2030-01-15T00:00:00.000Z"),
-				capabilityId: 10,
-				bandId: 2,
-				capability: {
-					capabilityId: 10,
-					capabilityName: "Engineering",
-				},
-				band: {
-					bandId: 2,
-					bandName: "Associate",
-				},
+		mockPrisma = {
+			jobRole: {
+				findMany: vi.fn(),
 			},
-		]);
+		};
 
-		const { default: app } = await import("../index");
-		const response = await supertest(app).get("/api/job-roles");
+		const jobRoleDao = new JobRoleDao(mockPrisma as unknown as PrismaClient);
+		const jobRoleServices = new JobRoleServices(jobRoleDao);
+		const jobRoleController = new JobRoleController(jobRoleServices);
 
-		expect(response.status).toBe(200);
-		expect(response.body).toEqual([
-			{
-				jobRoleId: 1,
-				roleName: "Software Engineer",
-				location: "Belfast",
-				closingDate: "2030-01-15",
-				capability: {
+		app = express();
+		app.use(express.json());
+		app.get("/api/job-roles", (req: Request, res: Response) =>
+			jobRoleController.getJobRoles(req, res),
+		);
+	});
+
+	describe("Endpoint success cases", () => {
+		it("returns 200 with job roles when found", async () => {
+			mockPrisma.jobRole.findMany.mockResolvedValue([
+				{
+					jobRoleId: 1,
+					roleName: "Software Engineer",
+					location: "Belfast",
+					closingDate: new Date("2030-01-15T00:00:00.000Z"),
 					capabilityId: 10,
-					capabilityName: "Engineering",
-				},
-				band: {
 					bandId: 2,
-					bandName: "Associate",
+					capability: {
+						capabilityId: 10,
+						capabilityName: "Engineering",
+					},
+					band: {
+						bandId: 2,
+						bandName: "Associate",
+					},
 				},
-			},
-		]);
+			]);
+
+			const response = await supertest(app).get("/api/job-roles");
+
+			expect(response.status).toBe(200);
+			expect(response.body).toEqual([
+				{
+					jobRoleId: 1,
+					roleName: "Software Engineer",
+					location: "Belfast",
+					closingDate: "2030-01-15",
+					capability: {
+						capabilityId: 10,
+						capabilityName: "Engineering",
+					},
+					band: {
+						bandId: 2,
+						bandName: "Associate",
+					},
+				},
+			]);
+		});
 	});
 
-	it("returns 404 when no job roles", async () => {
-		findManyMock.mockResolvedValue([]);
+	describe("Endpoint client errors", () => {
+		it("returns 404 when no job roles found", async () => {
+			mockPrisma.jobRole.findMany.mockResolvedValue([]);
 
-		const { default: app } = await import("../index");
-		const response = await supertest(app).get("/api/job-roles");
+			const response = await supertest(app).get("/api/job-roles");
 
-		expect(response.status).toBe(404);
-		expect(response.body).toEqual({ message: "No job roles found" });
+			expect(response.status).toBe(404);
+			expect(response.body).toEqual({ message: "No job roles found" });
+		});
 	});
 
-	it("returns 500 on failure", async () => {
-		findManyMock.mockRejectedValue(new Error("DB error"));
+	describe("Endpoint server errors", () => {
+		it("returns 500 when database fails", async () => {
+			mockPrisma.jobRole.findMany.mockRejectedValue(new Error("DB error"));
 
-		const { default: app } = await import("../index");
-		const response = await supertest(app).get("/api/job-roles");
+			const response = await supertest(app).get("/api/job-roles");
 
-		expect(response.status).toBe(500);
-		expect(response.body).toEqual({ error: "Failed to fetch job roles" });
+			expect(response.status).toBe(500);
+			expect(response.body).toEqual({
+				error: "Failed to fetch job roles",
+			});
+		});
 	});
 });
