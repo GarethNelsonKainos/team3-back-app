@@ -11,14 +11,18 @@
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
 		"dev": "tsx watch src/index.ts",
-		"build": "tsup",
+		"build": "tsc",
 		"start": "node dist/index.js",
 		"ci:generate": "dotenv -e .env.test -- prisma generate",
 		"ci:build": "dotenv -e .env.test -- npm run build",
 		"db:generate": "prisma generate",
 		"db:push": "prisma db push",
 		"db:migrate": "prisma migrate dev",
-		"db:studio": "prisma studio"
+		"db:studio": "prisma studio",
+		"db:seed": "prisma db seed"
+	},
+	"prisma": {
+		"seed": "tsx src/seed.ts"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.14",
