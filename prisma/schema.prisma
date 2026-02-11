@@ -12,10 +12,8 @@ model JobRole {
   roleName     String
   location    String
   closingDate  DateTime
-
   capability   Capability @relation(fields: [capabilityId], references: [capabilityId])
   capabilityId Int
-
   band         Band       @relation(fields: [bandId], references: [bandId])
   bandId       Int
 }
@@ -23,14 +21,12 @@ model JobRole {
 model Capability {
   capabilityId   Int       @id @default(autoincrement())
   capabilityName String
-
   jobRoles       JobRole[]
 }
 
 model Band {
   bandId   Int       @id @default(autoincrement())
   bandName String
-
   jobRoles JobRole[]
 }
 
