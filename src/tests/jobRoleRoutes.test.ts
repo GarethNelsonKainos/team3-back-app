@@ -96,3 +96,96 @@ describe("GET /api/job-roles", () => {
 		});
 	});
 });
+
+describe("GET /api/job-roles/:id", () => {
+	let mockPrisma: { jobRole: { findUnique: ReturnType<typeof vi.fn> } };
+	let app: ReturnType<typeof express>;
+
+	beforeEach(() => {
+		mockPrisma = {
+			jobRole: {
+				findUnique: vi.fn(),
+			},
+		};
+
+		const jobRoleDao = new JobRoleDao(mockPrisma as unknown as PrismaClient);
+		const jobRoleServices = new JobRoleServices(jobRoleDao);
+		const jobRoleController = new JobRoleController(jobRoleServices);
+
+		app = express();
+		app.use(express.json());
+		app.get("/api/job-roles/:id", (req: Request, res: Response) =>
+			jobRoleController.getJobRoleById(req, res),
+		);
+	});
+
+	describe("Endpoint success cases", () => {
+		it("returns 200 with job role when found by id", async () => {
+			mockPrisma.jobRole.findUnique.mockResolvedValue({
+				jobRoleId: 1,
+				roleName: "Software Engineer",
+				location: "Belfast",
+				closingDate: new Date("2030-01-15T00:00:00.000Z"),
+				capabilityId: 10,
+				bandId: 2,
+				capability: {
+					capabilityId: 10,
+					capabilityName: "Engineering",
+				},
+				band: {
+					bandId: 2,
+					bandName: "Associate",
+				},
+			});
+
+			const response = await supertest(app).get("/api/job-roles/1");
+
+			expect(response.status).toBe(200);
+			expect(response.body).toEqual({
+				jobRoleId: 1,
+				roleName: "Software Engineer",
+				location: "Belfast",
+				closingDate: "2030-01-15",
+				capability: {
+					capabilityId: 10,
+					capabilityName: "Engineering",
+				},
+				band: {
+					bandId: 2,
+					bandName: "Associate",
+				},
+			});
+		});
+	});
+
+	describe("Endpoint client errors", () => {
+		it("returns 404 when job role not found", async () => {
+			mockPrisma.jobRole.findUnique.mockResolvedValue(null);
+
+			const response = await supertest(app).get("/api/job-roles/999");
+
+			expect(response.status).toBe(404);
+			expect(response.body).toEqual({ message: "Job role not found" });
+		});
+
+		it("returns 400 when id is invalid", async () => {
+			const response = await supertest(app).get("/api/job-roles/invalid");
+
+			expect(response.status).toBe(400);
+			expect(response.body).toEqual({ message: "Invalid job role ID" });
+		});
+	});
+
+	describe("Endpoint server errors", () => {
+		it("returns 500 when database fails", async () => {
+			mockPrisma.jobRole.findUnique.mockRejectedValue(new Error("DB error"));
+
+			const response = await supertest(app).get("/api/job-roles/1");
+
+			expect(response.status).toBe(500);
+			expect(response.body).toEqual({
+				error: "Failed to fetch job role",
+			});
+		});
+	});
+});
