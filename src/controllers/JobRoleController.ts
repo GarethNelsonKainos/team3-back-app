@@ -24,4 +24,25 @@ export class JobRoleController {
 			});
 		}
 	}
+
+	async getJobRoleById(req: Request, res: Response) {
+		const jobRoleId = parseInt(req.params.id as string, 10);
+
+		if (Number.isNaN(jobRoleId)) {
+			return res.status(400).json({ message: "Invalid job role ID" });
+		}
+		try {
+			const jobRole = await this.jobRoleServices.getJobRoleById(jobRoleId);
+
+			if (!jobRole) {
+				return res.status(404).json({ message: "Job role not found" });
+			}
+			res.status(200).json(jobRole);
+		} catch (error) {
+			console.error("Error fetching job role by ID:", error);
+			res.status(500).json({
+				error: "Failed to fetch job role",
+			});
+		}
+	}
 }
