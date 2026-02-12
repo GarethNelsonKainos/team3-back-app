@@ -32,4 +32,9 @@ describe("AuthController", () => {
 		expect(res.status).toBe(200);
 		expect(res.body).toEqual({ token: "token" });
 	});
+
+	it("returns 204 on logout", async () => {
+		const res = await supertest(app).post("/api/logout").send();
+		expect(res.status).toBe(204);
+	});
 });
