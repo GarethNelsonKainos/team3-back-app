@@ -38,7 +38,12 @@ model Band {
 
 model Status{
   statusId   Int       @id @default(autoincrement())
-  statusName String
+  statusName StatusName
   jobRoles   JobRole[]
+}
+
+enum StatusName {
+  Open
+  Closed
 }
 
