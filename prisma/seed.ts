@@ -13,7 +13,9 @@ async function main() {
 
 	// Seed Capabilities
 	const capabilities = await Promise.all([
-		prismaSeedClient.capability.create({ data: { capabilityName: "Engineering" } }),
+		prismaSeedClient.capability.create({
+			data: { capabilityName: "Engineering" },
+		}),
 		prismaSeedClient.capability.create({ data: { capabilityName: "Data" } }),
 		prismaSeedClient.capability.create({ data: { capabilityName: "Product" } }),
 		prismaSeedClient.capability.create({ data: { capabilityName: "Design" } }),
@@ -46,7 +48,8 @@ async function main() {
 				location: "Belfast",
 				closingDate: new Date("2026-03-15"),
 				description: "Join our engineering team to build innovative solutions",
-				responsibilities: "Develop and maintain software applications, collaborate with team members, participate in code reviews",
+				responsibilities:
+					"Develop and maintain software applications, collaborate with team members, participate in code reviews",
 				numberOfOpenPositions: 3,
 				sharepointUrl: "https://sharepoint.example.com/role1",
 				capabilityId: capabilities[0].capabilityId,
@@ -60,7 +63,8 @@ async function main() {
 				location: "London",
 				closingDate: new Date("2026-04-01"),
 				description: "Analyze data to drive business decisions",
-				responsibilities: "Perform data analysis, create reports and dashboards, work with stakeholders to understand requirements",
+				responsibilities:
+					"Perform data analysis, create reports and dashboards, work with stakeholders to understand requirements",
 				numberOfOpenPositions: 2,
 				sharepointUrl: "https://sharepoint.example.com/role2",
 				capabilityId: capabilities[1].capabilityId,
@@ -74,7 +78,8 @@ async function main() {
 				location: "London",
 				closingDate: new Date("2026-03-30"),
 				description: "Lead product development and strategy",
-				responsibilities: "Define product roadmap, work with cross-functional teams, manage product backlog",
+				responsibilities:
+					"Define product roadmap, work with cross-functional teams, manage product backlog",
 				numberOfOpenPositions: 1,
 				sharepointUrl: "https://sharepoint.example.com/role3",
 				capabilityId: capabilities[2].capabilityId,
@@ -88,7 +93,8 @@ async function main() {
 				location: "Belfast",
 				closingDate: new Date("2026-02-28"),
 				description: "Create user-centered design solutions",
-				responsibilities: "Conduct user research, create wireframes and prototypes, collaborate with developers",
+				responsibilities:
+					"Conduct user research, create wireframes and prototypes, collaborate with developers",
 				numberOfOpenPositions: 1,
 				sharepointUrl: "https://sharepoint.example.com/role4",
 				capabilityId: capabilities[3].capabilityId,
@@ -102,7 +108,8 @@ async function main() {
 				location: "Remote",
 				closingDate: new Date("2026-01-31"),
 				description: "Lead technical initiatives and mentor junior developers",
-				responsibilities: "Design system architecture, mentor team members, lead technical discussions",
+				responsibilities:
+					"Design system architecture, mentor team members, lead technical discussions",
 				numberOfOpenPositions: 0,
 				sharepointUrl: "https://sharepoint.example.com/role5",
 				capabilityId: capabilities[0].capabilityId,
