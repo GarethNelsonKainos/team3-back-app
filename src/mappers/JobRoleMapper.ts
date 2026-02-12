@@ -5,6 +5,7 @@ export function JobRoleMapper(
 	jobRole: JobRole & {
 		capabilityName: string;
 		bandName: string;
+		statusName: string;
 	},
 ): JobRoleResponse {
 	return {
@@ -12,6 +13,9 @@ export function JobRoleMapper(
 		roleName: jobRole.roleName,
 		location: jobRole.location,
 		closingDate: jobRole.closingDate.toISOString().split("T")[0],
+		responsibilities: jobRole.responsibilities,
+		sharepointUrl: jobRole.sharepointUrl,
+		numberOfOpenPositions: jobRole.numberOfOpenPositions,
 		capability: {
 			capabilityId: jobRole.capabilityId,
 			capabilityName: jobRole.capabilityName,
@@ -19,6 +23,10 @@ export function JobRoleMapper(
 		band: {
 			bandId: jobRole.bandId,
 			bandName: jobRole.bandName,
+		},
+		status: {
+			statusId: jobRole.statusId,
+			statusName: jobRole.statusName,
 		},
 	};
 }

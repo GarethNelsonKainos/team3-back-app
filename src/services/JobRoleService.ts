@@ -14,8 +14,12 @@ export class JobRoleServices {
 		return jobRoles.map((jobRole) =>
 			JobRoleMapper({
 				...jobRole,
+				responsibilities: jobRole.responsibilities,
+				sharepointUrl: jobRole.sharepointUrl,
+				numberOfOpenPositions: jobRole.numberOfOpenPositions,
 				capabilityName: jobRole.capability.capabilityName,
 				bandName: jobRole.band.bandName,
+				statusName: jobRole.status.statusName,
 			}),
 		);
 	}
@@ -25,8 +29,12 @@ export class JobRoleServices {
 		return jobRoles.map((jobRole) =>
 			JobRoleMapper({
 				...jobRole,
+				responsibilities: jobRole.responsibilities,
+				sharepointUrl: jobRole.sharepointUrl,
+				numberOfOpenPositions: jobRole.numberOfOpenPositions,
 				capabilityName: jobRole.capability.capabilityName,
 				bandName: jobRole.band.bandName,
+				statusName: jobRole.status.statusName,
 			}),
 		);
 	}
@@ -38,8 +46,12 @@ export class JobRoleServices {
 		}
 		return JobRoleMapper({
 			...jobRole,
+			responsibilities: jobRole.responsibilities,
+			sharepointUrl: jobRole.sharepointUrl,
+			numberOfOpenPositions: jobRole.numberOfOpenPositions,
 			capabilityName: jobRole.capability.capabilityName,
 			bandName: jobRole.band.bandName,
+			statusName: jobRole.status.statusName,
 		});
 	}
 }

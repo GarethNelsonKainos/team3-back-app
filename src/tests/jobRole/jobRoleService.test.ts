@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { JobRoleDao } from "../dao/JobRoleDao";
-import { JobRoleServices } from "../services/JobRoleService";
+import type { JobRoleDao } from "../../dao/JobRoleDao";
+import { JobRoleServices } from "../../services/JobRoleService";
 
 describe("JobRoleServices", () => {
 	let mockJobRoleDao: {
@@ -30,8 +30,12 @@ describe("JobRoleServices", () => {
 					roleName: "Software Engineer",
 					location: "Belfast",
 					closingDate: new Date("2030-01-15T00:00:00.000Z"),
+					responsibilities: "Develop software solutions",
+					sharepointUrl: "http://example.com/job-role/1",
+					numberOfOpenPositions: 3,
 					capabilityId: 10,
 					bandId: 2,
+					statusId: 1,
 					capability: {
 						capabilityId: 10,
 						capabilityName: "Engineering",
@@ -40,21 +44,33 @@ describe("JobRoleServices", () => {
 						bandId: 2,
 						bandName: "Associate",
 					},
+					status: {
+						statusId: 1,
+						statusName: "Open",
+					},
 				},
 				{
-					jobRoleId: 2,
-					roleName: "Data Analyst",
-					location: "London",
-					closingDate: new Date("2030-02-20T00:00:00.000Z"),
-					capabilityId: 5,
-					bandId: 3,
+					jobRoleId: 1,
+					roleName: "Platform Engineer",
+					location: "Belfast",
+					closingDate: new Date("2030-01-15T00:00:00.000Z"),
+					responsibilities: "Develop platform services",
+					sharepointUrl: "http://example.com/job-role/1",
+					numberOfOpenPositions: 2,
+					capabilityId: 10,
+					bandId: 4,
+					statusId: 1,
 					capability: {
-						capabilityId: 5,
-						capabilityName: "Data",
+						capabilityId: 10,
+						capabilityName: "Engineering",
 					},
 					band: {
-						bandId: 3,
-						bandName: "Senior Associate",
+						bandId: 4,
+						bandName: "Senior",
+					},
+					status: {
+						statusId: 1,
+						statusName: "Open",
 					},
 				},
 			];
@@ -70,6 +86,9 @@ describe("JobRoleServices", () => {
 				roleName: "Software Engineer",
 				location: "Belfast",
 				closingDate: "2030-01-15",
+				responsibilities: "Develop software solutions",
+				sharepointUrl: "http://example.com/job-role/1",
+				numberOfOpenPositions: 3,
 				capability: {
 					capabilityId: 10,
 					capabilityName: "Engineering",
@@ -78,19 +97,30 @@ describe("JobRoleServices", () => {
 					bandId: 2,
 					bandName: "Associate",
 				},
+				status: {
+					statusId: 1,
+					statusName: "Open",
+				},
 			});
 			expect(result[1]).toEqual({
-				jobRoleId: 2,
-				roleName: "Data Analyst",
-				location: "London",
-				closingDate: "2030-02-20",
+				jobRoleId: 1,
+				roleName: "Platform Engineer",
+				location: "Belfast",
+				closingDate: "2030-01-15",
+				responsibilities: "Develop platform services",
+				sharepointUrl: "http://example.com/job-role/1",
+				numberOfOpenPositions: 2,
 				capability: {
-					capabilityId: 5,
-					capabilityName: "Data",
+					capabilityId: 10,
+					capabilityName: "Engineering",
 				},
 				band: {
-					bandId: 3,
-					bandName: "Senior Associate",
+					bandId: 4,
+					bandName: "Senior",
+				},
+				status: {
+					statusId: 1,
+					statusName: "Open",
 				},
 			});
 		});
@@ -113,8 +143,12 @@ describe("JobRoleServices", () => {
 					roleName: "Software Engineer",
 					location: "Belfast",
 					closingDate: new Date("2030-01-15T00:00:00.000Z"),
+					responsibilities: "Develop software solutions",
+					sharepointUrl: "http://example.com/job-role/1",
+					numberOfOpenPositions: 3,
 					capabilityId: 10,
 					bandId: 2,
+					statusId: 1,
 					capability: {
 						capabilityId: 10,
 						capabilityName: "Engineering",
@@ -122,6 +156,10 @@ describe("JobRoleServices", () => {
 					band: {
 						bandId: 2,
 						bandName: "Associate",
+					},
+					status: {
+						statusId: 1,
+						statusName: "Open",
 					},
 				},
 			];
@@ -137,6 +175,9 @@ describe("JobRoleServices", () => {
 				roleName: "Software Engineer",
 				location: "Belfast",
 				closingDate: "2030-01-15",
+				responsibilities: "Develop software solutions",
+				sharepointUrl: "http://example.com/job-role/1",
+				numberOfOpenPositions: 3,
 				capability: {
 					capabilityId: 10,
 					capabilityName: "Engineering",
@@ -144,6 +185,10 @@ describe("JobRoleServices", () => {
 				band: {
 					bandId: 2,
 					bandName: "Associate",
+				},
+				status: {
+					statusId: 1,
+					statusName: "Open",
 				},
 			});
 		});
@@ -165,8 +210,12 @@ describe("JobRoleServices", () => {
 				roleName: "Software Engineer",
 				location: "Belfast",
 				closingDate: new Date("2030-01-15T00:00:00.000Z"),
+				responsibilities: "Develop software solutions",
+				sharepointUrl: "http://example.com/job-role/1",
+				numberOfOpenPositions: 3,
 				capabilityId: 10,
 				bandId: 2,
+				statusId: 1,
 				capability: {
 					capabilityId: 10,
 					capabilityName: "Engineering",
@@ -174,6 +223,10 @@ describe("JobRoleServices", () => {
 				band: {
 					bandId: 2,
 					bandName: "Associate",
+				},
+				status: {
+					statusId: 1,
+					statusName: "Open",
 				},
 			};
 
@@ -187,6 +240,9 @@ describe("JobRoleServices", () => {
 				roleName: "Software Engineer",
 				location: "Belfast",
 				closingDate: "2030-01-15",
+				responsibilities: "Develop software solutions",
+				sharepointUrl: "http://example.com/job-role/1",
+				numberOfOpenPositions: 3,
 				capability: {
 					capabilityId: 10,
 					capabilityName: "Engineering",
@@ -194,6 +250,10 @@ describe("JobRoleServices", () => {
 				band: {
 					bandId: 2,
 					bandName: "Associate",
+				},
+				status: {
+					statusId: 1,
+					statusName: "Open",
 				},
 			});
 		});
