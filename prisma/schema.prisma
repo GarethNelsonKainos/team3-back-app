@@ -42,3 +42,8 @@ model Status{
   jobRoles   JobRole[]
 }
 
+model User {
+  userId       Int    @id @default(autoincrement())
+  email        String @unique
+  passwordHash String
+}
