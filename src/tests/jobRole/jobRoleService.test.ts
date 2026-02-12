@@ -50,12 +50,12 @@ describe("JobRoleServices", () => {
 					},
 				},
 				{
-					jobRoleId: 1,
+					jobRoleId: 2,
 					roleName: "Platform Engineer",
 					location: "Belfast",
 					closingDate: new Date("2030-01-15T00:00:00.000Z"),
 					responsibilities: "Develop platform services",
-					sharepointUrl: "http://example.com/job-role/1",
+					sharepointUrl: "http://example.com/job-role/2",
 					numberOfOpenPositions: 2,
 					capabilityId: 10,
 					bandId: 4,
@@ -103,12 +103,12 @@ describe("JobRoleServices", () => {
 				},
 			});
 			expect(result[1]).toEqual({
-				jobRoleId: 1,
+				jobRoleId: 2,
 				roleName: "Platform Engineer",
 				location: "Belfast",
 				closingDate: "2030-01-15",
 				responsibilities: "Develop platform services",
-				sharepointUrl: "http://example.com/job-role/1",
+				sharepointUrl: "http://example.com/job-role/2",
 				numberOfOpenPositions: 2,
 				capability: {
 					capabilityId: 10,
