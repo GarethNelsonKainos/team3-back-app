@@ -13,6 +13,7 @@ export function JobRoleMapper(
 		roleName: jobRole.roleName,
 		location: jobRole.location,
 		closingDate: jobRole.closingDate.toISOString().split("T")[0],
+		description: jobRole.description,
 		responsibilities: jobRole.responsibilities,
 		sharepointUrl: jobRole.sharepointUrl,
 		numberOfOpenPositions: jobRole.numberOfOpenPositions,

@@ -3,6 +3,7 @@ export interface JobRole {
 	roleName: string;
 	location: string;
 	closingDate: Date;
+	description: string;
 	responsibilities: string;
 	sharepointUrl: string;
 	numberOfOpenPositions: number;
