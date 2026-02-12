@@ -163,13 +163,13 @@ describe("GET /api/job-roles/open", () => {
 	});
 
 	describe("Endpoint client errors", () => {
-		it("returns 404 when no open job roles found", async () => {
+		it("returns 204 when no open job roles found", async () => {
 			mockPrisma.jobRole.findMany.mockResolvedValue([]);
 
 			const response = await supertest(app).get("/api/job-roles/open");
 
-			expect(response.status).toBe(404);
-			expect(response.body).toEqual({ message: "No open job roles found" });
+			expect(response.status).toBe(204);
+			expect(response.body).toEqual({});
 		});
 	});
 

@@ -30,7 +30,7 @@ export class JobRoleController {
 			const openJobRoles = await this.jobRoleServices.getAllOpenJobRoles();
 
 			if (!openJobRoles || openJobRoles.length === 0) {
-				return res.status(404).json({ message: "No open job roles found" });
+				return res.status(204).send();
 			}
 
 			res.status(200).json(openJobRoles);
