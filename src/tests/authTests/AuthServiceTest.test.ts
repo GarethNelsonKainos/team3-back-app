@@ -29,7 +29,7 @@ describe("AuthService.login", () => {
 			passwordHash: "hash",
 		});
 
-		const { verifyPassword } = await import("../../utils/Password");
+		const { verifyPassword } = await import("../../utils/password");
 		(verifyPassword as ReturnType<typeof vi.fn>).mockResolvedValue(true);
 		vi.spyOn(jwt, "sign").mockImplementation(() => "token");
 

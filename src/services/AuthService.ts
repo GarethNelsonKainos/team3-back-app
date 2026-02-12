@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import type { AuthDao } from "../dao/AuthDao";
-import { verifyPassword } from "../utils/Password";
+import { verifyPassword } from "../utils/password";
 
 export class AuthService {
 	private authDao: AuthDao;
