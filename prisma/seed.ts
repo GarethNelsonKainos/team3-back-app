@@ -5,12 +5,6 @@ const prismaSeedClient = prisma;
 async function main() {
 	console.log("Starting seed...");
 
-	// Clear existing data
-	await prismaSeedClient.jobRole.deleteMany();
-	await prismaSeedClient.capability.deleteMany();
-	await prismaSeedClient.band.deleteMany();
-	await prismaSeedClient.status.deleteMany();
-
 	// Seed Capabilities
 	const capabilities = await Promise.all([
 		prismaSeedClient.capability.create({
@@ -36,7 +30,6 @@ async function main() {
 	const statuses = await Promise.all([
 		prismaSeedClient.status.create({ data: { statusName: "Open" } }),
 		prismaSeedClient.status.create({ data: { statusName: "Closed" } }),
-		prismaSeedClient.status.create({ data: { statusName: "Draft" } }),
 	]);
 	console.log(`Created ${statuses.length} statuses`);
 
@@ -99,7 +92,7 @@ async function main() {
 				sharepointUrl: "https://sharepoint.example.com/role4",
 				capabilityId: capabilities[3].capabilityId,
 				bandId: bands[2].bandId,
-				statusId: statuses[2].statusId,
+				statusId: statuses[1].statusId,
 			},
 		}),
 		prismaSeedClient.jobRole.create({
