@@ -16,6 +16,20 @@ export class JobRoleDao {
 		});
 	}
 
+	async getAllOpenJobRoles() {
+		return await this.prisma.jobRole.findMany({
+			where: {
+				status: {
+					statusName: "Open",
+				},
+			},
+			include: {
+				capability: true,
+				band: true,
+			},
+		});
+	}
+
 	async getJobRoleById(jobRoleId: number) {
 		return await this.prisma.jobRole.findUnique({
 			where: { jobRoleId },

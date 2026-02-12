@@ -25,6 +25,23 @@ export class JobRoleController {
 		}
 	}
 
+	async getOpenJobRoles(_req: Request, res: Response) {
+		try {
+			const openJobRoles = await this.jobRoleServices.getAllOpenJobRoles();
+
+			if (!openJobRoles || openJobRoles.length === 0) {
+				return res.status(404).json({ message: "No open job roles found" });
+			}
+
+			res.status(200).json(openJobRoles);
+		} catch (error) {
+			console.error("Error fetching open job roles:", error);
+			res.status(500).json({
+				error: "Failed to fetch open job roles",
+			});
+		}
+	}
+
 	async getJobRoleById(req: Request, res: Response) {
 		const jobRoleId = parseInt(req.params.id as string, 10);
 

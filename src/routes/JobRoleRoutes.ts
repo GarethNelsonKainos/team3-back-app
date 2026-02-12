@@ -14,6 +14,10 @@ jobRoleRouter.get("/api/job-roles", (req, res) =>
 	jobRoleController.getJobRoles(req, res),
 );
 
+jobRoleRouter.get("/api/job-roles/open", (req, res) =>
+	jobRoleController.getOpenJobRoles(req, res),
+);
+
 jobRoleRouter.get("/api/job-roles/:id", (req, res) =>
 	jobRoleController.getJobRoleById(req, res),
 );
