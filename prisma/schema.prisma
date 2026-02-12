@@ -38,7 +38,7 @@ model Band {
 
 model Status{
   statusId   Int       @id @default(autoincrement())
-  statusName String
+  statusName StatusName
   jobRoles   JobRole[]
 }
 
@@ -47,3 +47,8 @@ model User {
   email        String @unique
   passwordHash String
 }
+enum StatusName {
+  Open
+  Closed
+}
+

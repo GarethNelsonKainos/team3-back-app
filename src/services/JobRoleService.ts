@@ -20,6 +20,17 @@ export class JobRoleServices {
 		);
 	}
 
+	async getAllOpenJobRoles(): Promise<JobRoleResponse[]> {
+		const jobRoles = await this.jobRoleDao.getAllOpenJobRoles();
+		return jobRoles.map((jobRole) =>
+			JobRoleMapper({
+				...jobRole,
+				capabilityName: jobRole.capability.capabilityName,
+				bandName: jobRole.band.bandName,
+			}),
+		);
+	}
+
 	async getJobRoleById(jobRoleId: number): Promise<JobRoleResponse | null> {
 		const jobRole = await this.jobRoleDao.getJobRoleById(jobRoleId);
 		if (!jobRole) {

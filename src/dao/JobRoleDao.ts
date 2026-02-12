@@ -1,4 +1,4 @@
-import type { PrismaClient } from "../generated/client";
+import { type PrismaClient, StatusName } from "../generated/client";
 
 export class JobRoleDao {
 	private prisma: PrismaClient;
@@ -9,6 +9,20 @@ export class JobRoleDao {
 
 	async getAllJobRoles() {
 		return await this.prisma.jobRole.findMany({
+			include: {
+				capability: true,
+				band: true,
+			},
+		});
+	}
+
+	async getAllOpenJobRoles() {
+		return await this.prisma.jobRole.findMany({
+			where: {
+				status: {
+					statusName: StatusName.Open,
+				},
+			},
 			include: {
 				capability: true,
 				band: true,
