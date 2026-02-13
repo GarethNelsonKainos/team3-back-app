@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { JobRoleController } from "../controllers/JobRoleController";
-import type { JobRoleServices } from "../services/JobRoleService";
+import { JobRoleController } from "../../controllers/JobRoleController";
+import type { JobRoleServices } from "../../services/JobRoleService";
 
 describe("JobRoleController", () => {
 	let mockJobRoleServices: {

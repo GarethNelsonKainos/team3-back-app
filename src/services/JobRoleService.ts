@@ -16,6 +16,7 @@ export class JobRoleServices {
 				...jobRole,
 				capabilityName: jobRole.capability.capabilityName,
 				bandName: jobRole.band.bandName,
+				statusName: jobRole.status.statusName,
 			}),
 		);
 	}
@@ -27,6 +28,7 @@ export class JobRoleServices {
 				...jobRole,
 				capabilityName: jobRole.capability.capabilityName,
 				bandName: jobRole.band.bandName,
+				statusName: jobRole.status.statusName,
 			}),
 		);
 	}
@@ -40,6 +42,7 @@ export class JobRoleServices {
 			...jobRole,
 			capabilityName: jobRole.capability.capabilityName,
 			bandName: jobRole.band.bandName,
+			statusName: jobRole.status.statusName,
 		});
 	}
 }

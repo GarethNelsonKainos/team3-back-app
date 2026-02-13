@@ -2,10 +2,10 @@ import type { Request, Response } from "express";
 import express from "express";
 import supertest from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { JobRoleController } from "../controllers/JobRoleController";
-import { JobRoleDao } from "../dao/JobRoleDao";
-import type { PrismaClient } from "../generated/client";
-import { JobRoleServices } from "../services/JobRoleService";
+import { JobRoleController } from "../../controllers/JobRoleController";
+import { JobRoleDao } from "../../dao/JobRoleDao";
+import type { PrismaClient } from "../../generated/client";
+import { JobRoleServices } from "../../services/JobRoleService";
 
 describe("GET /api/job-roles", () => {
 	let mockPrisma: { jobRole: { findMany: ReturnType<typeof vi.fn> } };
@@ -37,8 +37,13 @@ describe("GET /api/job-roles", () => {
 					roleName: "Software Engineer",
 					location: "Belfast",
 					closingDate: new Date("2030-01-15T00:00:00.000Z"),
+					description: "Develop software",
+					responsibilities: "Develop software solutions",
+					sharepointUrl: "http://example.com/job-role/1",
+					numberOfOpenPositions: 3,
 					capabilityId: 10,
 					bandId: 2,
+					statusId: 1,
 					capability: {
 						capabilityId: 10,
 						capabilityName: "Engineering",
@@ -46,6 +51,10 @@ describe("GET /api/job-roles", () => {
 					band: {
 						bandId: 2,
 						bandName: "Associate",
+					},
+					status: {
+						statusId: 1,
+						statusName: "Open",
 					},
 				},
 			]);
@@ -59,6 +68,10 @@ describe("GET /api/job-roles", () => {
 					roleName: "Software Engineer",
 					location: "Belfast",
 					closingDate: "2030-01-15",
+					description: "Develop software",
+					responsibilities: "Develop software solutions",
+					sharepointUrl: "http://example.com/job-role/1",
+					numberOfOpenPositions: 3,
 					capability: {
 						capabilityId: 10,
 						capabilityName: "Engineering",
@@ -66,6 +79,10 @@ describe("GET /api/job-roles", () => {
 					band: {
 						bandId: 2,
 						bandName: "Associate",
+					},
+					status: {
+						statusId: 1,
+						statusName: "Open",
 					},
 				},
 			]);
@@ -127,8 +144,13 @@ describe("GET /api/job-roles/open", () => {
 					roleName: "Software Engineer",
 					location: "Belfast",
 					closingDate: new Date("2030-01-15T00:00:00.000Z"),
+					description: "Develop software",
+					responsibilities: "Develop software solutions",
+					sharepointUrl: "http://example.com/job-role/1",
+					numberOfOpenPositions: 3,
 					capabilityId: 10,
 					bandId: 2,
+					statusId: 1,
 					capability: {
 						capabilityId: 10,
 						capabilityName: "Engineering",
@@ -136,6 +158,10 @@ describe("GET /api/job-roles/open", () => {
 					band: {
 						bandId: 2,
 						bandName: "Associate",
+					},
+					status: {
+						statusId: 1,
+						statusName: "Open",
 					},
 				},
 			]);
@@ -149,6 +175,10 @@ describe("GET /api/job-roles/open", () => {
 					roleName: "Software Engineer",
 					location: "Belfast",
 					closingDate: "2030-01-15",
+					description: "Develop software",
+					responsibilities: "Develop software solutions",
+					sharepointUrl: "http://example.com/job-role/1",
+					numberOfOpenPositions: 3,
 					capability: {
 						capabilityId: 10,
 						capabilityName: "Engineering",
@@ -156,6 +186,10 @@ describe("GET /api/job-roles/open", () => {
 					band: {
 						bandId: 2,
 						bandName: "Associate",
+					},
+					status: {
+						statusId: 1,
+						statusName: "Open",
 					},
 				},
 			]);
@@ -216,8 +250,13 @@ describe("GET /api/job-roles/:id", () => {
 				roleName: "Software Engineer",
 				location: "Belfast",
 				closingDate: new Date("2030-01-15T00:00:00.000Z"),
+				description: "Develop software",
+				responsibilities: "Develop software solutions",
+				sharepointUrl: "http://example.com/job-role/1",
+				numberOfOpenPositions: 3,
 				capabilityId: 10,
 				bandId: 2,
+				statusId: 1,
 				capability: {
 					capabilityId: 10,
 					capabilityName: "Engineering",
@@ -225,6 +264,10 @@ describe("GET /api/job-roles/:id", () => {
 				band: {
 					bandId: 2,
 					bandName: "Associate",
+				},
+				status: {
+					statusId: 1,
+					statusName: "Open",
 				},
 			});
 
@@ -236,6 +279,10 @@ describe("GET /api/job-roles/:id", () => {
 				roleName: "Software Engineer",
 				location: "Belfast",
 				closingDate: "2030-01-15",
+				description: "Develop software",
+				responsibilities: "Develop software solutions",
+				sharepointUrl: "http://example.com/job-role/1",
+				numberOfOpenPositions: 3,
 				capability: {
 					capabilityId: 10,
 					capabilityName: "Engineering",
@@ -243,6 +290,10 @@ describe("GET /api/job-roles/:id", () => {
 				band: {
 					bandId: 2,
 					bandName: "Associate",
+				},
+				status: {
+					statusId: 1,
+					statusName: "Open",
 				},
 			});
 		});

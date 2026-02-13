@@ -12,6 +12,7 @@ export class JobRoleDao {
 			include: {
 				capability: true,
 				band: true,
+				status: true,
 			},
 		});
 	}
@@ -26,6 +27,7 @@ export class JobRoleDao {
 			include: {
 				capability: true,
 				band: true,
+				status: true,
 			},
 		});
 	}
@@ -36,6 +38,7 @@ export class JobRoleDao {
 			include: {
 				capability: true,
 				band: true,
+				status: true,
 			},
 		});
 	}
