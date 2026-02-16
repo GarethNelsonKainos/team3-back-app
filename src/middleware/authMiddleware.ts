@@ -19,7 +19,6 @@ export const authMiddleware = (
 		return res.status(500).json({ message: "Server configuration error" });
 	}
 
-	// 1. Try Authorization header
 	let token: string | undefined;
 	const authHeader = req.headers.authorization;
 
@@ -27,10 +26,10 @@ export const authMiddleware = (
 		token = authHeader.slice(7);
 	}
 
-	// 2. If no header token, try cookie
-	if (!token && req.cookies?.token) {
-		token = req.cookies.token;
-	}
+	// 2. If no header token, try cookie - flag addition later
+	//if (!token && req.cookies?.token) {
+	//	token = req.cookies.token;
+	//}
 
 	if (!token) {
 		return res.status(401).json({ message: "No token provided" });
@@ -43,9 +42,24 @@ export const authMiddleware = (
 			return res.status(401).json({ message: "Invalid token format" });
 		}
 
+		if (!decoded.sub || !decoded.email) {
+			return res.status(401).json({ message: "Invalid token claims" });
+		}
+
+		const userId = Number(decoded.sub);
+		const userEmail = String(decoded.email);
+
+		if (Number.isNaN(userId) || userId <= 0) {
+			return res.status(401).json({ message: "Invalid user ID in token" });
+		}
+
+		if (!userEmail || userEmail === "undefined") {
+			return res.status(401).json({ message: "Invalid email in token" });
+		}
+
 		(req as AuthRequest).user = {
-			sub: Number(decoded.sub),
-			email: String(decoded.email),
+			sub: userId,
+			email: userEmail,
 		};
 
 		next();
