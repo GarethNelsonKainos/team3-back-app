@@ -22,23 +22,25 @@ model JobRole {
   bandId       Int
   status       Status     @relation(fields: [statusId], references: [statusId])
   statusId     Int
+
+  @@unique([roleName, location], name: "uniqueId")
 }
 
 model Capability {
   capabilityId   Int       @id @default(autoincrement())
-  capabilityName String
+  capabilityName String    @unique
   jobRoles       JobRole[]
 }
 
 model Band {
   bandId   Int       @id @default(autoincrement())
-  bandName String
+  bandName String    @unique
   jobRoles JobRole[]
 }
 
 model Status{
   statusId   Int       @id @default(autoincrement())
-  statusName StatusName
+  statusName StatusName @unique
   jobRoles   JobRole[]
 }
 

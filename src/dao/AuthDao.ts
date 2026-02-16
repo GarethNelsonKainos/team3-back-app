@@ -12,4 +12,13 @@ export class AuthDao {
 			where: { email },
 		});
 	}
+
+	async createUser(email: string, passwordHash: string) {
+		return this.prisma.user.create({
+			data: {
+				email,
+				passwordHash,
+			},
+		});
+	}
 }
