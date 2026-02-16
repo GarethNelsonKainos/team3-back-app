@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { AuthController } from "../controllers/AuthController";
 import { AuthDao } from "../dao/AuthDao";
+import { authMiddleware } from "../middleware/authMiddleware";
 import { prisma } from "../prisma";
 import { AuthService } from "../services/AuthService";
 
@@ -11,6 +12,8 @@ const authService = new AuthService(authDao);
 const authController = new AuthController(authService);
 
 authRouter.post("/api/login", (req, res) => authController.login(req, res));
-authRouter.post("/api/logout", (req, res) => authController.logout(req, res));
+authRouter.post("/api/logout", authMiddleware, (req, res) =>
+	authController.logout(req, res),
+);
 
 export default authRouter;

@@ -27,6 +27,7 @@ describe("AuthService.login", () => {
 			userId: 1,
 			email: "test@example.com",
 			passwordHash: "hash",
+			role: "ADMIN",
 		});
 
 		const { verifyPassword } = await import("../../utils/password");

@@ -5,6 +5,7 @@ export interface AuthRequest extends Request {
 	user?: {
 		sub: number;
 		email: string;
+		role: string;
 	};
 }
 
@@ -46,8 +47,13 @@ export const authMiddleware = (
 			return res.status(401).json({ message: "Invalid token claims" });
 		}
 
+		if (!decoded.role) {
+			return res.status(401).json({ message: "Invalid token claims" });
+		}
+
 		const userId = Number(decoded.sub);
 		const userEmail = String(decoded.email);
+		const userRole = String(decoded.role);
 
 		if (Number.isNaN(userId) || userId <= 0) {
 			return res.status(401).json({ message: "Invalid user ID in token" });
@@ -57,13 +63,34 @@ export const authMiddleware = (
 			return res.status(401).json({ message: "Invalid email in token" });
 		}
 
+		if (userRole !== "ADMIN" && userRole !== "APPLICANT") {
+			return res.status(401).json({ message: "Invalid role in token" });
+		}
+
 		(req as AuthRequest).user = {
 			sub: userId,
 			email: userEmail,
+			role: userRole,
 		};
 
 		next();
 	} catch (_err) {
 		return res.status(401).json({ message: "Invalid or expired token" });
 	}
+};
+
+export const requireRole = (allowedRoles: string[]) => {
+	return (req: Request, res: Response, next: NextFunction) => {
+		const userRole = (req as AuthRequest).user?.role;
+
+		if (!userRole) {
+			return res.status(401).json({ message: "No role in token" });
+		}
+
+		if (!allowedRoles.includes(userRole)) {
+			return res.status(403).json({ message: "Forbidden" });
+		}
+
+		next();
+	};
 };
