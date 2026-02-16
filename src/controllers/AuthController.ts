@@ -30,7 +30,6 @@ export class AuthController {
 	}
 
 	async logout(_req: Request, res: Response) {
-		// Stateless JWT logout: client clears session storage
 		return res.status(204).send();
 	}
 
