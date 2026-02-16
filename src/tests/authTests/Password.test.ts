@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { hashPassword, verifyPassword } from "../../utils/password";
+import {
+	hashPassword,
+	validatePassword,
+	verifyPassword,
+} from "../../utils/password";
 
 vi.mock("argon2", () => ({
 	default: {
@@ -51,5 +55,21 @@ describe("password utils", () => {
 			"hashed_password",
 			"wrong",
 		);
+	});
+
+	it("validates password complexity", () => {
+		expect(validatePassword("Short1!")).toBe(
+			"Password must be at least 8 characters",
+		);
+		expect(validatePassword("alllowercase1!")).toBe(
+			"Password must contain uppercase letter",
+		);
+		expect(validatePassword("ALLUPPERCASE1!")).toBe(
+			"Password must contain lowercase letter",
+		);
+		expect(validatePassword("NoSpecial123")).toBe(
+			"Password must contain special character",
+		);
+		expect(validatePassword("GoodPass1!")).toBe(true);
 	});
 });

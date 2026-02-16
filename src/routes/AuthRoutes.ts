@@ -12,5 +12,8 @@ const authController = new AuthController(authService);
 
 authRouter.post("/api/login", (req, res) => authController.login(req, res));
 authRouter.post("/api/logout", (req, res) => authController.logout(req, res));
+authRouter.post("/api/register", (req, res) =>
+	authController.register(req, res),
+);
 
 export default authRouter;
