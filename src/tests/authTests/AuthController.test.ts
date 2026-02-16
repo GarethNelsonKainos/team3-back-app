@@ -38,25 +38,35 @@ describe("AuthController", () => {
 		const res = await supertest(app).post("/api/logout").send();
 		expect(res.status).toBe(204);
 	});
+
 	it("returns 400 on register with missing fields", async () => {
 		const res = await supertest(app).post("/api/register").send({});
 		expect(res.status).toBe(400);
 	});
 
-	it("returns 409 when user already exists on register", async () => {
-		authService.register.mockResolvedValue(false);
+	it("returns 400 on invalid email format", async () => {
+		authService.register.mockRejectedValue(new Error("Invalid email format"));
 		const res = await supertest(app)
 			.post("/api/register")
-			.send({ email: "test@example.com", password: "pw" });
+			.send({ email: "bad", password: "Password1!" });
+		expect(res.status).toBe(400);
+		expect(res.body).toEqual({ message: "Invalid email format" });
+	});
+
+	it("returns 409 when user already exists on register", async () => {
+		authService.register.mockRejectedValue(new Error("User already exists"));
+		const res = await supertest(app)
+			.post("/api/register")
+			.send({ email: "test@example.com", password: "Password1!" });
 		expect(res.status).toBe(409);
 		expect(res.body).toEqual({ message: "User already exists" });
 	});
 
 	it("returns 201 on successful registration", async () => {
-		authService.register.mockResolvedValue(true);
+		authService.register.mockResolvedValue(undefined);
 		const res = await supertest(app)
 			.post("/api/register")
-			.send({ email: "newuser@example.com", password: "pw" });
+			.send({ email: "newuser@example.com", password: "Password1!" });
 		expect(res.status).toBe(201);
 		expect(res.body).toEqual({
 			message: "User registered successfully",

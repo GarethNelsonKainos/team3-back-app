@@ -6,6 +6,11 @@ import { AuthService } from "../../services/AuthService";
 vi.mock("../../utils/password", () => ({
 	verifyPassword: vi.fn(),
 	hashPassword: vi.fn(),
+	validatePassword: vi.fn(),
+}));
+
+vi.mock("../../utils/email", () => ({
+	validateEmail: vi.fn(),
 }));
 
 describe("AuthService.login", () => {
@@ -53,19 +58,61 @@ describe("AuthService.register", () => {
 		mockDao.createUser.mockReset();
 	});
 
-	it("returns false when user already exists", async () => {
+	it("throws when email format is invalid", async () => {
+		const { validateEmail } = await import("../../utils/email");
+		(validateEmail as ReturnType<typeof vi.fn>).mockReturnValue(false);
+
+		await expect(
+			service.register("invalid-email", "Password1!"),
+		).rejects.toThrow("Invalid email format");
+		expect(mockDao.createUser).not.toHaveBeenCalled();
+	});
+
+	it("throws when password does not meet complexity", async () => {
+		const { validateEmail } = await import("../../utils/email");
+		const { validatePassword } = await import("../../utils/password");
+		(validateEmail as ReturnType<typeof vi.fn>).mockReturnValue(true);
+		(validatePassword as ReturnType<typeof vi.fn>).mockReturnValue({
+			valid: false,
+			error: "Password must be at least 8 characters",
+		});
+
+		await expect(service.register("test@example.com", "short")).rejects.toThrow(
+			"Password must be at least 8 characters",
+		);
+		expect(mockDao.createUser).not.toHaveBeenCalled();
+	});
+
+	it("throws when user already exists", async () => {
+		const { validateEmail } = await import("../../utils/email");
+		const { validatePassword } = await import("../../utils/password");
+		(validateEmail as ReturnType<typeof vi.fn>).mockReturnValue(true);
+		(validatePassword as ReturnType<typeof vi.fn>).mockReturnValue({
+			valid: true,
+		});
+
 		mockDao.findUserByEmail.mockResolvedValue({
 			userId: 1,
 			email: "test@example.com",
 			passwordHash: "hash",
 		});
 
-		const result = await service.register("test@example.com", "pw");
-		expect(result).toBe(false);
+		await expect(
+			service.register("test@example.com", "Password1!"),
+		).rejects.toThrow("User already exists");
 		expect(mockDao.createUser).not.toHaveBeenCalled();
 	});
 
-	it("returns true and creates user on success", async () => {
+	it("creates user on success", async () => {
+		const { validateEmail } = await import("../../utils/email");
+		const { hashPassword, validatePassword } = await import(
+			"../../utils/password"
+		);
+		(validateEmail as ReturnType<typeof vi.fn>).mockReturnValue(true);
+		(validatePassword as ReturnType<typeof vi.fn>).mockReturnValue({
+			valid: true,
+		});
+
 		mockDao.findUserByEmail.mockResolvedValue(null);
 		mockDao.createUser.mockResolvedValue({
 			userId: 2,
@@ -73,20 +120,14 @@ describe("AuthService.register", () => {
 			passwordHash: "hashed",
 		});
 
-		const { hashPassword } = await import("../../utils/password");
 		(hashPassword as ReturnType<typeof vi.fn>).mockResolvedValue("hashed");
 
-		const result = await service.register("newuser@example.com", "pw");
-		expect(result).toBe(true);
+		await expect(
+			service.register("NewUser@Example.com", "Password1!"),
+		).resolves.toBeUndefined();
 		expect(mockDao.createUser).toHaveBeenCalledWith(
 			"newuser@example.com",
 			"hashed",
 		);
-	});
-
-	it("returns false when inputs are invalid", async () => {
-		const result = await service.register("", "pw");
-		expect(result).toBe(false);
-		expect(mockDao.createUser).not.toHaveBeenCalled();
 	});
 });

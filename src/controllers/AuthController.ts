@@ -41,13 +41,23 @@ export class AuthController {
 		}
 
 		try {
-			const success = await this.authService.register(email, password);
-			if (!success) {
-				return res.status(409).json({ message: "User already exists" });
-			}
-
+			await this.authService.register(email, password);
 			return res.status(201).json({ message: "User registered successfully" });
 		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : "Registration failed";
+
+			if (
+				errorMessage === "Invalid email format" ||
+				errorMessage.includes("Password must")
+			) {
+				return res.status(400).json({ message: errorMessage });
+			}
+
+			if (errorMessage === "User already exists") {
+				return res.status(409).json({ message: errorMessage });
+			}
+
 			console.error("Registration failed:", error);
 			return res.status(500).json({ error: "Registration failed" });
 		}
