@@ -32,4 +32,24 @@ export class AuthController {
 		// Stateless JWT logout: client clears session storage
 		return res.status(204).send();
 	}
+
+	async register(req: Request, res: Response) {
+		const { email, password } = req.body ?? {};
+
+		if (!email || !password) {
+			return res.status(400).json({ message: "Email and password required" });
+		}
+
+		try {
+			const success = await this.authService.register(email, password);
+			if (!success) {
+				return res.status(409).json({ message: "User already exists" });
+			}
+
+			return res.status(201).json({ message: "User registered successfully" });
+		} catch (error) {
+			console.error("Registration failed:", error);
+			return res.status(500).json({ error: "Registration failed" });
+		}
+	}
 }

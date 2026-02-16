@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import type { AuthDao } from "../dao/AuthDao";
-import { verifyPassword } from "../utils/password";
+import { hashPassword, verifyPassword } from "../utils/password";
 
 export class AuthService {
 	private authDao: AuthDao;
@@ -37,5 +37,29 @@ export class AuthService {
 		return jwt.sign({ sub: user.userId, email: user.email }, secret, {
 			expiresIn: "1h",
 		});
+	}
+
+	async register(email: string, password: string): Promise<boolean> {
+		if (typeof email !== "string" || typeof password !== "string") {
+			return false;
+		}
+
+		const normalizedEmail = email.trim().toLowerCase();
+
+		if (!normalizedEmail || !password) {
+			return false;
+		}
+
+		// Check if user already exists
+		const existingUser = await this.authDao.findUserByEmail(normalizedEmail);
+		if (existingUser) {
+			return false;
+		}
+
+		// Hash password and create user
+		const passwordHash = await hashPassword(password);
+		await this.authDao.createUser(normalizedEmail, passwordHash);
+
+		return true;
 	}
 }
