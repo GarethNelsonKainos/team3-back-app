@@ -7,36 +7,85 @@ async function main() {
 
 	// Seed Capabilities
 	const capabilities = await Promise.all([
-		prismaSeedClient.capability.create({
-			data: { capabilityName: "Engineering" },
+		prismaSeedClient.capability.upsert({
+			where: { capabilityName: "Engineering" },
+			update: {},
+			create: { capabilityName: "Engineering" },
 		}),
-		prismaSeedClient.capability.create({ data: { capabilityName: "Data" } }),
-		prismaSeedClient.capability.create({ data: { capabilityName: "Product" } }),
-		prismaSeedClient.capability.create({ data: { capabilityName: "Design" } }),
+		prismaSeedClient.capability.upsert({
+			where: { capabilityName: "Data" },
+			update: {},
+			create: { capabilityName: "Data" },
+		}),
+		prismaSeedClient.capability.upsert({
+			where: { capabilityName: "Product" },
+			update: {},
+			create: { capabilityName: "Product" },
+		}),
+		prismaSeedClient.capability.upsert({
+			where: { capabilityName: "Design" },
+			update: {},
+			create: { capabilityName: "Design" },
+		}),
 	]);
 	console.log(`Created ${capabilities.length} capabilities`);
 
 	// Seed Bands
 	const bands = await Promise.all([
-		prismaSeedClient.band.create({ data: { bandName: "Apprentice" } }),
-		prismaSeedClient.band.create({ data: { bandName: "Trainee" } }),
-		prismaSeedClient.band.create({ data: { bandName: "Associate" } }),
-		prismaSeedClient.band.create({ data: { bandName: "Senior" } }),
-		prismaSeedClient.band.create({ data: { bandName: "Lead" } }),
+		prismaSeedClient.band.upsert({
+			where: { bandName: "Apprentice" },
+			update: {},
+			create: { bandName: "Apprentice" },
+		}),
+		prismaSeedClient.band.upsert({
+			where: { bandName: "Trainee" },
+			update: {},
+			create: { bandName: "Trainee" },
+		}),
+		prismaSeedClient.band.upsert({
+			where: { bandName: "Associate" },
+			update: {},
+			create: { bandName: "Associate" },
+		}),
+		prismaSeedClient.band.upsert({
+			where: { bandName: "Senior" },
+			update: {},
+			create: { bandName: "Senior" },
+		}),
+		prismaSeedClient.band.upsert({
+			where: { bandName: "Lead" },
+			update: {},
+			create: { bandName: "Lead" },
+		}),
 	]);
 	console.log(`Created ${bands.length} bands`);
 
 	// Seed Statuses
 	const statuses = await Promise.all([
-		prismaSeedClient.status.create({ data: { statusName: "Open" } }),
-		prismaSeedClient.status.create({ data: { statusName: "Closed" } }),
+		prismaSeedClient.status.upsert({
+			where: { statusName: "Open" },
+			update: {},
+			create: { statusName: "Open" },
+		}),
+		prismaSeedClient.status.upsert({
+			where: { statusName: "Closed" },
+			update: {},
+			create: { statusName: "Closed" },
+		}),
 	]);
 	console.log(`Created ${statuses.length} statuses`);
 
 	// Seed Job Roles
 	const jobRoles = await Promise.all([
-		prismaSeedClient.jobRole.create({
-			data: {
+		prismaSeedClient.jobRole.upsert({
+			where: {
+				uniqueId: {
+					roleName: "Software Engineer",
+					location: "Belfast",
+				},
+			},
+			update: {},
+			create: {
 				roleName: "Software Engineer",
 				location: "Belfast",
 				closingDate: new Date("2026-03-15"),
@@ -51,8 +100,15 @@ async function main() {
 				statusId: statuses[0].statusId,
 			},
 		}),
-		prismaSeedClient.jobRole.create({
-			data: {
+		prismaSeedClient.jobRole.upsert({
+			where: {
+				uniqueId: {
+					roleName: "Data Analyst",
+					location: "London",
+				},
+			},
+			update: {},
+			create: {
 				roleName: "Data Analyst",
 				location: "London",
 				closingDate: new Date("2026-04-01"),
@@ -67,8 +123,15 @@ async function main() {
 				statusId: statuses[0].statusId,
 			},
 		}),
-		prismaSeedClient.jobRole.create({
-			data: {
+		prismaSeedClient.jobRole.upsert({
+			where: {
+				uniqueId: {
+					roleName: "Product Consultant",
+					location: "London",
+				},
+			},
+			update: {},
+			create: {
 				roleName: "Product Consultant",
 				location: "London",
 				closingDate: new Date("2026-03-30"),
@@ -83,8 +146,15 @@ async function main() {
 				statusId: statuses[0].statusId,
 			},
 		}),
-		prismaSeedClient.jobRole.create({
-			data: {
+		prismaSeedClient.jobRole.upsert({
+			where: {
+				uniqueId: {
+					roleName: "UX Designer",
+					location: "Belfast",
+				},
+			},
+			update: {},
+			create: {
 				roleName: "UX Designer",
 				location: "Belfast",
 				closingDate: new Date("2026-02-28"),
@@ -98,8 +168,15 @@ async function main() {
 				statusId: statuses[1].statusId,
 			},
 		}),
-		prismaSeedClient.jobRole.create({
-			data: {
+		prismaSeedClient.jobRole.upsert({
+			where: {
+				uniqueId: {
+					roleName: "Senior Software Engineer",
+					location: "Remote",
+				},
+			},
+			update: {},
+			create: {
 				roleName: "Senior Software Engineer",
 				location: "Remote",
 				closingDate: new Date("2026-01-31"),
@@ -113,8 +190,15 @@ async function main() {
 				statusId: statuses[1].statusId,
 			},
 		}),
-		prismaSeedClient.jobRole.create({
-			data: {
+		prismaSeedClient.jobRole.upsert({
+			where: {
+				uniqueId: {
+					roleName: "Security Engineer",
+					location: "Remote",
+				},
+			},
+			update: {},
+			create: {
 				roleName: "Security Engineer",
 				location: "Remote",
 				closingDate: new Date("2026-05-02"),
@@ -129,8 +213,15 @@ async function main() {
 				statusId: statuses[0].statusId,
 			},
 		}),
-		prismaSeedClient.jobRole.create({
-			data: {
+		prismaSeedClient.jobRole.upsert({
+			where: {
+				uniqueId: {
+					roleName: "Platform Engineer",
+					location: "Belfast",
+				},
+			},
+			update: {},
+			create: {
 				roleName: "Platform Engineer",
 				location: "Belfast",
 				closingDate: new Date("2026-04-20"),
@@ -145,8 +236,15 @@ async function main() {
 				statusId: statuses[0].statusId,
 			},
 		}),
-		prismaSeedClient.jobRole.create({
-			data: {
+		prismaSeedClient.jobRole.upsert({
+			where: {
+				uniqueId: {
+					roleName: "Security Engineer",
+					location: "London",
+				},
+			},
+			update: {},
+			create: {
 				roleName: "Security Engineer",
 				location: "London",
 				closingDate: new Date("2026-05-12"),
@@ -161,8 +259,15 @@ async function main() {
 				statusId: statuses[0].statusId,
 			},
 		}),
-		prismaSeedClient.jobRole.create({
-			data: {
+		prismaSeedClient.jobRole.upsert({
+			where: {
+				uniqueId: {
+					roleName: "AI Engineer",
+					location: "Remote",
+				},
+			},
+			update: {},
+			create: {
 				roleName: "AI Engineer",
 				location: "Remote",
 				closingDate: new Date("2026-05-22"),
@@ -177,9 +282,16 @@ async function main() {
 				statusId: statuses[0].statusId,
 			},
 		}),
-		prismaSeedClient.jobRole.create({
-			data: {
-				roleName: "Data Analyst",
+		prismaSeedClient.jobRole.upsert({
+			where: {
+				uniqueId: {
+					roleName: "Lead Data Analyst",
+					location: "London",
+				},
+			},
+			update: {},
+			create: {
+				roleName: "Lead Data Analyst",
 				location: "London",
 				closingDate: new Date("2026-04-30"),
 				description: "Lead strategy and delivery for data products",
@@ -193,8 +305,15 @@ async function main() {
 				statusId: statuses[0].statusId,
 			},
 		}),
-		prismaSeedClient.jobRole.create({
-			data: {
+		prismaSeedClient.jobRole.upsert({
+			where: {
+				uniqueId: {
+					roleName: "Product Specialist",
+					location: "Belfast",
+				},
+			},
+			update: {},
+			create: {
 				roleName: "Product Specialist",
 				location: "Belfast",
 				closingDate: new Date("2026-04-14"),
@@ -209,8 +328,15 @@ async function main() {
 				statusId: statuses[0].statusId,
 			},
 		}),
-		prismaSeedClient.jobRole.create({
-			data: {
+		prismaSeedClient.jobRole.upsert({
+			where: {
+				uniqueId: {
+					roleName: "UX Researcher",
+					location: "London",
+				},
+			},
+			update: {},
+			create: {
 				roleName: "UX Researcher",
 				location: "London",
 				closingDate: new Date("2026-03-26"),
