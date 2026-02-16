@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { AuthDao } from "../../dao/AuthDao";
+import { ConflictError, ValidationError } from "../../errors/AuthErrors";
 import { AuthService } from "../../services/AuthService";
 
 vi.mock("../../utils/password", () => ({
@@ -64,7 +65,7 @@ describe("AuthService.register", () => {
 
 		await expect(
 			service.register("invalid-email", "Password1!"),
-		).rejects.toThrow("Invalid email format");
+		).rejects.toThrow(ValidationError);
 		expect(mockDao.createUser).not.toHaveBeenCalled();
 	});
 
@@ -72,13 +73,12 @@ describe("AuthService.register", () => {
 		const { validateEmail } = await import("../../utils/email");
 		const { validatePassword } = await import("../../utils/password");
 		(validateEmail as ReturnType<typeof vi.fn>).mockReturnValue(true);
-		(validatePassword as ReturnType<typeof vi.fn>).mockReturnValue({
-			valid: false,
-			error: "Password must be at least 8 characters",
-		});
+		(validatePassword as ReturnType<typeof vi.fn>).mockReturnValue(
+			"Password must be at least 8 characters",
+		);
 
 		await expect(service.register("test@example.com", "short")).rejects.toThrow(
-			"Password must be at least 8 characters",
+			ValidationError,
 		);
 		expect(mockDao.createUser).not.toHaveBeenCalled();
 	});
@@ -87,9 +87,7 @@ describe("AuthService.register", () => {
 		const { validateEmail } = await import("../../utils/email");
 		const { validatePassword } = await import("../../utils/password");
 		(validateEmail as ReturnType<typeof vi.fn>).mockReturnValue(true);
-		(validatePassword as ReturnType<typeof vi.fn>).mockReturnValue({
-			valid: true,
-		});
+		(validatePassword as ReturnType<typeof vi.fn>).mockReturnValue(true);
 
 		mockDao.findUserByEmail.mockResolvedValue({
 			userId: 1,
@@ -99,7 +97,7 @@ describe("AuthService.register", () => {
 
 		await expect(
 			service.register("test@example.com", "Password1!"),
-		).rejects.toThrow("User already exists");
+		).rejects.toThrow(ConflictError);
 		expect(mockDao.createUser).not.toHaveBeenCalled();
 	});
 
@@ -109,9 +107,7 @@ describe("AuthService.register", () => {
 			"../../utils/password"
 		);
 		(validateEmail as ReturnType<typeof vi.fn>).mockReturnValue(true);
-		(validatePassword as ReturnType<typeof vi.fn>).mockReturnValue({
-			valid: true,
-		});
+		(validatePassword as ReturnType<typeof vi.fn>).mockReturnValue(true);
 
 		mockDao.findUserByEmail.mockResolvedValue(null);
 		mockDao.createUser.mockResolvedValue({

@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import type { AuthDao } from "../dao/AuthDao";
+import { ConflictError, ValidationError } from "../errors/AuthErrors";
 import { validateEmail } from "../utils/email";
 import {
 	hashPassword,
@@ -45,31 +46,27 @@ export class AuthService {
 	}
 
 	async register(email: string, password: string): Promise<void> {
-		if (typeof email !== "string" || typeof password !== "string") {
-			throw new Error("Invalid input");
-		}
-
 		const normalizedEmail = email.trim().toLowerCase();
 
 		if (!normalizedEmail || !password) {
-			throw new Error("Email and password required");
+			throw new ValidationError("Email and password required");
 		}
 
 		// Validate email format
 		if (!validateEmail(normalizedEmail)) {
-			throw new Error("Invalid email format");
+			throw new ValidationError("Invalid email format");
 		}
 
 		// Validate password complexity
 		const passwordValidation = validatePassword(password);
-		if (!passwordValidation.valid) {
-			throw new Error(passwordValidation.error || "Invalid password");
+		if (passwordValidation !== true) {
+			throw new ValidationError(passwordValidation);
 		}
 
 		// Check if user already exists
 		const existingUser = await this.authDao.findUserByEmail(normalizedEmail);
 		if (existingUser) {
-			throw new Error("User already exists");
+			throw new ConflictError("User already exists");
 		}
 
 		// Hash password and create user

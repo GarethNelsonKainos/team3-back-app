@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { ConflictError, ValidationError } from "../errors/AuthErrors";
 import type { AuthService } from "../services/AuthService";
 
 export class AuthController {
@@ -44,18 +45,12 @@ export class AuthController {
 			await this.authService.register(email, password);
 			return res.status(201).json({ message: "User registered successfully" });
 		} catch (error) {
-			const errorMessage =
-				error instanceof Error ? error.message : "Registration failed";
-
-			if (
-				errorMessage === "Invalid email format" ||
-				errorMessage.includes("Password must")
-			) {
-				return res.status(400).json({ message: errorMessage });
+			if (error instanceof ValidationError) {
+				return res.status(400).json({ message: error.message });
 			}
 
-			if (errorMessage === "User already exists") {
-				return res.status(409).json({ message: errorMessage });
+			if (error instanceof ConflictError) {
+				return res.status(409).json({ message: error.message });
 			}
 
 			console.error("Registration failed:", error);

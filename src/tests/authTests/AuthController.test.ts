@@ -2,6 +2,7 @@ import express from "express";
 import supertest from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AuthController } from "../../controllers/AuthController";
+import { ConflictError, ValidationError } from "../../errors/AuthErrors";
 import type { AuthService } from "../../services/AuthService";
 
 describe("AuthController", () => {
@@ -45,7 +46,9 @@ describe("AuthController", () => {
 	});
 
 	it("returns 400 on invalid email format", async () => {
-		authService.register.mockRejectedValue(new Error("Invalid email format"));
+		authService.register.mockRejectedValue(
+			new ValidationError("Invalid email format"),
+		);
 		const res = await supertest(app)
 			.post("/api/register")
 			.send({ email: "bad", password: "Password1!" });
@@ -54,7 +57,9 @@ describe("AuthController", () => {
 	});
 
 	it("returns 409 when user already exists on register", async () => {
-		authService.register.mockRejectedValue(new Error("User already exists"));
+		authService.register.mockRejectedValue(
+			new ConflictError("User already exists"),
+		);
 		const res = await supertest(app)
 			.post("/api/register")
 			.send({ email: "test@example.com", password: "Password1!" });
