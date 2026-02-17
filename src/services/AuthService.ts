@@ -40,9 +40,13 @@ export class AuthService {
 			throw new Error("JWT_SECRET is not set");
 		}
 
-		return jwt.sign({ sub: user.userId, email: user.email }, secret, {
-			expiresIn: "1h",
-		});
+		return jwt.sign(
+			{ sub: user.userId, email: user.email, role: user.role },
+			secret,
+			{
+				expiresIn: "1h",
+			},
+		);
 	}
 
 	async register(email: string, password: string): Promise<void> {
