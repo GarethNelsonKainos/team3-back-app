@@ -48,12 +48,7 @@ model User {
   userId       Int    @id @default(autoincrement())
   email        String @unique
   passwordHash String
-  role         UserRole @default(APPLICANT)
-}
-
-enum UserRole {
-  ADMIN
-  APPLICANT
+  role         String @default("APPLICANT")
 }
 
 enum StatusName {

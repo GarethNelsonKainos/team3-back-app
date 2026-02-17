@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { isValidUserRole } from "../enums/UserRole";
 
 export interface AuthRequest extends Request {
 	user?: {
@@ -63,7 +64,7 @@ export const authMiddleware = (
 			return res.status(401).json({ message: "Invalid email in token" });
 		}
 
-		if (userRole !== "ADMIN" && userRole !== "APPLICANT") {
+		if (!isValidUserRole(userRole)) {
 			return res.status(401).json({ message: "Invalid role in token" });
 		}
 

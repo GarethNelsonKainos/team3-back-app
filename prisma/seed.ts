@@ -1,4 +1,6 @@
+import { UserRole } from "../src/enums/UserRole";
 import { prisma } from "../src/prisma";
+import { hashPassword } from "../src/utils/password";
 
 const prismaSeedClient = prisma;
 
@@ -507,6 +509,47 @@ async function main() {
 		}),
 	]);
 	console.log(`Created ${jobRoles.length} job roles`);
+
+	// Seed Users
+	const users = await Promise.all([
+		prismaSeedClient.user.upsert({
+			where: { email: "admin@kainos.com" },
+			update: {},
+			create: {
+				email: "admin@kainos.com",
+				passwordHash: await hashPassword("Admin123!"),
+				role: UserRole.ADMIN,
+			},
+		}),
+		prismaSeedClient.user.upsert({
+			where: { email: "applicant@kainos.com" },
+			update: {},
+			create: {
+				email: "applicant@kainos.com",
+				passwordHash: await hashPassword("Applicant123!"),
+				role: UserRole.APPLICANT,
+			},
+		}),
+		prismaSeedClient.user.upsert({
+			where: { email: "test.admin@example.com" },
+			update: {},
+			create: {
+				email: "test.admin@example.com",
+				passwordHash: await hashPassword("Test123!"),
+				role: UserRole.ADMIN,
+			},
+		}),
+		prismaSeedClient.user.upsert({
+			where: { email: "test.user@example.com" },
+			update: {},
+			create: {
+				email: "test.user@example.com",
+				passwordHash: await hashPassword("Test123!"),
+				role: UserRole.APPLICANT,
+			},
+		}),
+	]);
+	console.log(`Created ${users.length} users`);
 
 	console.log("Seed completed successfully!");
 }
