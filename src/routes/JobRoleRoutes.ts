@@ -2,7 +2,7 @@ import { Router } from "express";
 import { JobRoleController } from "../controllers/JobRoleController";
 import { JobRoleDao } from "../dao/JobRoleDao";
 import { UserRole } from "../enums/UserRole";
-import { authMiddleware, requireRole } from "../middleware/authMiddleware";
+import { authMiddleware } from "../middleware/authMiddleware";
 import { prisma } from "../prisma";
 import { JobRoleServices } from "../services/JobRoleService";
 
@@ -14,22 +14,19 @@ const jobRoleController = new JobRoleController(jobRoleServices);
 
 jobRoleRouter.get(
 	"/api/job-roles",
-	authMiddleware,
-	requireRole([UserRole.ADMIN, UserRole.APPLICANT]),
+	authMiddleware([UserRole.ADMIN, UserRole.APPLICANT]),
 	(req, res) => jobRoleController.getJobRoles(req, res),
 );
 
 jobRoleRouter.get(
 	"/api/job-roles/open",
-	authMiddleware,
-	requireRole([UserRole.ADMIN, UserRole.APPLICANT]),
+	authMiddleware([UserRole.ADMIN, UserRole.APPLICANT]),
 	(req, res) => jobRoleController.getOpenJobRoles(req, res),
 );
 
 jobRoleRouter.get(
 	"/api/job-roles/:id",
-	authMiddleware,
-	requireRole([UserRole.ADMIN, UserRole.APPLICANT]),
+	authMiddleware([UserRole.ADMIN, UserRole.APPLICANT]),
 	(req, res) => jobRoleController.getJobRoleById(req, res),
 );
 

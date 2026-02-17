@@ -15,7 +15,7 @@ authRouter.post("/api/login", (req, res) => authController.login(req, res));
 authRouter.post("/api/register", (req, res) =>
 	authController.register(req, res),
 );
-authRouter.post("/api/logout", authMiddleware, (req, res) =>
+authRouter.post("/api/logout", authMiddleware(), (req, res) =>
 	authController.logout(req, res),
 );
 

@@ -4,7 +4,7 @@ import supertest from "supertest";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { UserRole } from "../../enums/UserRole";
 import type { AuthRequest } from "../../middleware/authMiddleware";
-import { authMiddleware, requireRole } from "../../middleware/authMiddleware";
+import { authMiddleware } from "../../middleware/authMiddleware";
 
 describe("authMiddleware", () => {
 	let app: ReturnType<typeof express>;
@@ -15,7 +15,7 @@ describe("authMiddleware", () => {
 		app = express();
 		app.use(express.json());
 
-		app.get("/protected", authMiddleware, (req: AuthRequest, res) => {
+		app.get("/protected", authMiddleware(), (req: AuthRequest, res) => {
 			res.json({ user: req.user });
 		});
 
@@ -398,17 +398,13 @@ describe("authMiddleware", () => {
 			app = express();
 			app.use(express.json());
 
-			app.get(
-				"/admin",
-				authMiddleware,
-				requireRole([UserRole.ADMIN]),
-				(_req, res) => res.json({ ok: true }),
+			app.get("/admin", authMiddleware([UserRole.ADMIN]), (_req, res) =>
+				res.json({ ok: true }),
 			);
 
 			app.get(
 				"/any-user",
-				authMiddleware,
-				requireRole([UserRole.ADMIN, UserRole.APPLICANT]),
+				authMiddleware([UserRole.ADMIN, UserRole.APPLICANT]),
 				(_req, res) => res.json({ ok: true }),
 			);
 
