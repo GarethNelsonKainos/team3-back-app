@@ -1,6 +1,7 @@
 import "dotenv/config";
 import cors from "cors";
 import express from "express";
+import applicationRouter from "./routes/ApplicationRoutes";
 import authRouter from "./routes/AuthRoutes";
 import jobRoleRouter from "./routes/JobRoleRoutes";
 
@@ -12,6 +13,7 @@ app.use(cors({ origin: corsOrigin, credentials: true }));
 app.use(express.json());
 app.use(authRouter);
 app.use(jobRoleRouter);
+app.use(applicationRouter);
 
 app.get("/", (_req, res) => {
 	res.json({ message: "Kainos Job Application API" });
