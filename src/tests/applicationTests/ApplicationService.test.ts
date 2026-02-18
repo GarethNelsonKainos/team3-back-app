@@ -68,7 +68,7 @@ describe("ApplicationService", () => {
 				userId: 1,
 				jobRoleId: 5,
 				cvKey: mockCvKey,
-				status: "PENDING",
+				status: "IN_PROGRESS",
 			});
 			expect(mockApplicationDao.createApplication).toHaveBeenCalledOnce();
 			expect(result).toEqual(mockSavedApplication);
@@ -111,7 +111,7 @@ describe("ApplicationService", () => {
 				userId: 10,
 				jobRoleId: 25,
 				cvKey: "uploads/cv.pdf",
-				status: "PENDING",
+				status: "IN_PROGRESS",
 				createdAt: new Date(),
 			});
 
@@ -201,7 +201,7 @@ describe("ApplicationService", () => {
 				userId: 1,
 				jobRoleId: 5,
 				cvKey: "uploads/cv.pdf",
-				status: "PENDING",
+				status: "IN_PROGRESS",
 				createdAt: new Date(),
 			});
 
@@ -209,7 +209,7 @@ describe("ApplicationService", () => {
 
 			expect(mockApplicationDao.createApplication).toHaveBeenCalledWith(
 				expect.objectContaining({
-					status: "PENDING",
+					status: "IN_PROGRESS",
 				}),
 			);
 		});

@@ -76,7 +76,7 @@ model Application {
   userId       Int
   jobRoleId    Int
   cvKey        String
-  status       String    @default("PENDING")
+  status       String    
   createdAt    DateTime  @default(now())
 }
 
