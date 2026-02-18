@@ -64,4 +64,12 @@ export class ApplicationDao {
 			},
 		});
 	}
+
+	async createApplication(
+		data: Parameters<PrismaClient["application"]["create"]>[0]["data"],
+	) {
+		return this.prisma.application.create({
+			data,
+		});
+	}
 }

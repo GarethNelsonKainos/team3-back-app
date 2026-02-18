@@ -71,6 +71,15 @@ enum ApplicationStatus {
   Rejected
 }
 
+model Application {
+  applicationId Int       @id @default(autoincrement())
+  userId       Int
+  jobRoleId    Int
+  cvKey        String
+  status       String    @default("PENDING")
+  createdAt    DateTime  @default(now())
+}
+
 enum StatusName {
   Open
   Closed
