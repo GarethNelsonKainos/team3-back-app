@@ -1,5 +1,6 @@
 import type FileStorageClient from "../client/FileStorageClient";
 import type ApplicationDao from "../dao/ApplicationDao";
+import { ApplicationStatus } from "../enums/ApplicationStatus";
 
 export default class ApplicationService {
 	private fileStorageClient: FileStorageClient;
@@ -25,7 +26,7 @@ export default class ApplicationService {
 			userId: applicationData.userId,
 			jobRoleId: Number(applicationData.jobRoleId),
 			cvKey: fileUrl,
-			status: "PENDING",
+			status: ApplicationStatus.PENDING,
 		});
 
 		return saved;

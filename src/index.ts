@@ -6,9 +6,9 @@ import authRouter from "./routes/AuthRoutes";
 import jobRoleRouter from "./routes/JobRoleRoutes";
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
-const corsOrigin = process.env.CORS_ORIGIN || "http://localhost:3000";
+const corsOrigin = process.env.CORS_ORIGIN || "http://localhost:3001";
 app.use(cors({ origin: corsOrigin, credentials: true }));
 app.use(express.json());
 app.use(authRouter);

@@ -64,7 +64,7 @@ describe("ApplicationRoutes - POST /api/job-roles/:id/apply", () => {
 				userId: 123,
 				jobRoleId: 5,
 				cvKey: "uploads/cv-123.pdf",
-				status: "PENDING",
+				status: "IN_PROGRESS",
 				createdAt: new Date(),
 			};
 

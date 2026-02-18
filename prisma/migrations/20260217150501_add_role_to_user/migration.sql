@@ -7,7 +7,7 @@ CREATE TABLE "Application" (
     "userId" INTEGER NOT NULL,
     "jobRoleId" INTEGER NOT NULL,
     "cvKey" TEXT NOT NULL,
-    "status" TEXT NOT NULL DEFAULT 'PENDING',
+    "status" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Application_pkey" PRIMARY KEY ("applicationId")
