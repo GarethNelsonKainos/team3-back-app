@@ -124,7 +124,9 @@ describe("ApplicationService", () => {
 				applicationService.createApplication(applicationData),
 			).rejects.toThrow("You have already applied to this job role");
 
-			expect(mockApplicationDao.getApplicationByUserAndJobRole).toHaveBeenCalledWith(1, 5);
+			expect(
+				mockApplicationDao.getApplicationByUserAndJobRole,
+			).toHaveBeenCalledWith(1, 5);
 			expect(mockFileStorageClient.uploadFile).not.toHaveBeenCalled();
 			expect(mockApplicationDao.createApplication).not.toHaveBeenCalled();
 		});
