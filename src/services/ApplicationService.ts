@@ -99,11 +99,16 @@ export class ApplicationService {
 			);
 		}
 		// Determine open positions from either the returned application.jobRole or via jobRoleDao
-		let numberOfOpenPositions: number | undefined = undefined;
-		if (application.jobRole && typeof application.jobRole.numberOfOpenPositions === 'number') {
+		let numberOfOpenPositions: number | undefined;
+		if (
+			application.jobRole &&
+			typeof application.jobRole.numberOfOpenPositions === "number"
+		) {
 			numberOfOpenPositions = application.jobRole.numberOfOpenPositions;
 		} else if (this.jobRoleDao) {
-			const jobRole = await this.jobRoleDao.getJobRoleById(application.jobRoleId);
+			const jobRole = await this.jobRoleDao.getJobRoleById(
+				application.jobRoleId,
+			);
 			numberOfOpenPositions = jobRole?.numberOfOpenPositions;
 		}
 		if (!numberOfOpenPositions || numberOfOpenPositions <= 0) {
@@ -116,8 +121,12 @@ export class ApplicationService {
 			"Hired",
 		);
 		// decrement via applicationDao if available, otherwise jobRoleDao
-		if (typeof (this.applicationDao as any).decrementOpenPositions === 'function') {
-			await (this.applicationDao as any).decrementOpenPositions(application.jobRoleId);
+		if (
+			typeof (this.applicationDao as any).decrementOpenPositions === "function"
+		) {
+			await (this.applicationDao as any).decrementOpenPositions(
+				application.jobRoleId,
+			);
 		} else if (this.jobRoleDao) {
 			await this.jobRoleDao.decrementOpenPositions(application.jobRoleId);
 		}

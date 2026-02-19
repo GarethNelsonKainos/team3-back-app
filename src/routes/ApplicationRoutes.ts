@@ -92,7 +92,8 @@ applicationRouter.get(
 		}
 
 		try {
-			const application = await applicationDao.getApplicationById(applicationId);
+			const application =
+				await applicationDao.getApplicationById(applicationId);
 
 			if (!application) {
 				return res.status(404).json({ message: "Application not found" });
@@ -104,7 +105,10 @@ applicationRouter.get(
 
 			const normalizedKey = normalizeCvKey(application.cvUrl);
 
-			if (normalizedKey.startsWith("http://") || normalizedKey.startsWith("https://")) {
+			if (
+				normalizedKey.startsWith("http://") ||
+				normalizedKey.startsWith("https://")
+			) {
 				return res.redirect(normalizedKey);
 			}
 

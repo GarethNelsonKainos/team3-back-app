@@ -44,7 +44,8 @@ describe("ApplicationService", () => {
 				file: mockFile,
 			};
 
-			const mockCvUrl = "https://team3-cvs.s3.eu-west-1.amazonaws.com/uploads/cv-123.pdf";
+			const mockCvUrl =
+				"https://team3-cvs.s3.eu-west-1.amazonaws.com/uploads/cv-123.pdf";
 			const mockSavedApplication = {
 				applicationId: 1,
 				userId: 1,
@@ -105,7 +106,9 @@ describe("ApplicationService", () => {
 				file: mockFile,
 			};
 
-			mockFileStorageClient.uploadFile.mockResolvedValue("https://team3-cvs.s3.eu-west-1.amazonaws.com/uploads/cv.pdf");
+			mockFileStorageClient.uploadFile.mockResolvedValue(
+				"https://team3-cvs.s3.eu-west-1.amazonaws.com/uploads/cv.pdf",
+			);
 			mockApplicationDao.createApplication.mockResolvedValue({
 				applicationId: 1,
 				userId: 10,
@@ -195,7 +198,9 @@ describe("ApplicationService", () => {
 				file: mockFile,
 			};
 
-			mockFileStorageClient.uploadFile.mockResolvedValue("https://team3-cvs.s3.eu-west-1.amazonaws.com/uploads/cv.pdf");
+			mockFileStorageClient.uploadFile.mockResolvedValue(
+				"https://team3-cvs.s3.eu-west-1.amazonaws.com/uploads/cv.pdf",
+			);
 			mockApplicationDao.createApplication.mockResolvedValue({
 				applicationId: 1,
 				userId: 1,
