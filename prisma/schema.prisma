@@ -39,7 +39,7 @@ model Band {
   jobRoles JobRole[]
 }
 
-model Status{
+model Status {
   statusId   Int       @id @default(autoincrement())
   statusName StatusName @unique
   jobRoles   JobRole[]
