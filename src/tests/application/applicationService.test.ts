@@ -60,8 +60,7 @@ describe("ApplicationService", () => {
 				mockApplications,
 			);
 
-			const result =
-				await applicationService.getApplicationsByJobRoleId(1);
+			const result = await applicationService.getApplicationsByJobRoleId(1);
 
 			expect(
 				mockApplicationDao.getApplicationsByJobRoleId,
@@ -88,8 +87,7 @@ describe("ApplicationService", () => {
 		it("should return empty array when no applications exist", async () => {
 			mockApplicationDao.getApplicationsByJobRoleId.mockResolvedValue([]);
 
-			const result =
-				await applicationService.getApplicationsByJobRoleId(1);
+			const result = await applicationService.getApplicationsByJobRoleId(1);
 
 			expect(result).toEqual([]);
 		});
@@ -119,23 +117,18 @@ describe("ApplicationService", () => {
 				user: { userId: 2, email: "applicant@kainos.com" },
 			};
 
-			mockApplicationDao.getApplicationById.mockResolvedValue(
-				mockApplication,
-			);
-			mockApplicationDao.updateApplicationStatus.mockResolvedValue(
-				mockUpdated,
-			);
+			mockApplicationDao.getApplicationById.mockResolvedValue(mockApplication);
+			mockApplicationDao.updateApplicationStatus.mockResolvedValue(mockUpdated);
 			mockApplicationDao.decrementOpenPositions.mockResolvedValue({});
 
 			const result = await applicationService.hireApplicant(1);
 
 			expect(mockApplicationDao.getApplicationById).toHaveBeenCalledWith(1);
-			expect(
-				mockApplicationDao.updateApplicationStatus,
-			).toHaveBeenCalledWith(1, "Hired");
-			expect(
-				mockApplicationDao.decrementOpenPositions,
-			).toHaveBeenCalledWith(1);
+			expect(mockApplicationDao.updateApplicationStatus).toHaveBeenCalledWith(
+				1,
+				"Hired",
+			);
+			expect(mockApplicationDao.decrementOpenPositions).toHaveBeenCalledWith(1);
 			expect(result).toEqual({
 				applicationId: 1,
 				userId: 2,
@@ -149,9 +142,9 @@ describe("ApplicationService", () => {
 		it("should throw ApplicationNotFoundError when application does not exist", async () => {
 			mockApplicationDao.getApplicationById.mockResolvedValue(null);
 
-			await expect(
-				applicationService.hireApplicant(999),
-			).rejects.toThrow(ApplicationNotFoundError);
+			await expect(applicationService.hireApplicant(999)).rejects.toThrow(
+				ApplicationNotFoundError,
+			);
 		});
 
 		it("should throw InvalidApplicationStatusError when status is not InProgress", async () => {
@@ -168,13 +161,11 @@ describe("ApplicationService", () => {
 				},
 			};
 
-			mockApplicationDao.getApplicationById.mockResolvedValue(
-				mockApplication,
-			);
+			mockApplicationDao.getApplicationById.mockResolvedValue(mockApplication);
 
-			await expect(
-				applicationService.hireApplicant(1),
-			).rejects.toThrow(InvalidApplicationStatusError);
+			await expect(applicationService.hireApplicant(1)).rejects.toThrow(
+				InvalidApplicationStatusError,
+			);
 		});
 
 		it("should throw NoOpenPositionsError when no open positions", async () => {
@@ -191,13 +182,11 @@ describe("ApplicationService", () => {
 				},
 			};
 
-			mockApplicationDao.getApplicationById.mockResolvedValue(
-				mockApplication,
-			);
+			mockApplicationDao.getApplicationById.mockResolvedValue(mockApplication);
 
-			await expect(
-				applicationService.hireApplicant(1),
-			).rejects.toThrow(NoOpenPositionsError);
+			await expect(applicationService.hireApplicant(1)).rejects.toThrow(
+				NoOpenPositionsError,
+			);
 		});
 	});
 
@@ -225,22 +214,17 @@ describe("ApplicationService", () => {
 				user: { userId: 2, email: "applicant@kainos.com" },
 			};
 
-			mockApplicationDao.getApplicationById.mockResolvedValue(
-				mockApplication,
-			);
-			mockApplicationDao.updateApplicationStatus.mockResolvedValue(
-				mockUpdated,
-			);
+			mockApplicationDao.getApplicationById.mockResolvedValue(mockApplication);
+			mockApplicationDao.updateApplicationStatus.mockResolvedValue(mockUpdated);
 
 			const result = await applicationService.rejectApplicant(1);
 
 			expect(mockApplicationDao.getApplicationById).toHaveBeenCalledWith(1);
-			expect(
-				mockApplicationDao.updateApplicationStatus,
-			).toHaveBeenCalledWith(1, "Rejected");
-			expect(
-				mockApplicationDao.decrementOpenPositions,
-			).not.toHaveBeenCalled();
+			expect(mockApplicationDao.updateApplicationStatus).toHaveBeenCalledWith(
+				1,
+				"Rejected",
+			);
+			expect(mockApplicationDao.decrementOpenPositions).not.toHaveBeenCalled();
 			expect(result).toEqual({
 				applicationId: 1,
 				userId: 2,
@@ -254,9 +238,9 @@ describe("ApplicationService", () => {
 		it("should throw ApplicationNotFoundError when application does not exist", async () => {
 			mockApplicationDao.getApplicationById.mockResolvedValue(null);
 
-			await expect(
-				applicationService.rejectApplicant(999),
-			).rejects.toThrow(ApplicationNotFoundError);
+			await expect(applicationService.rejectApplicant(999)).rejects.toThrow(
+				ApplicationNotFoundError,
+			);
 		});
 
 		it("should throw InvalidApplicationStatusError when status is not InProgress", async () => {
@@ -273,13 +257,11 @@ describe("ApplicationService", () => {
 				},
 			};
 
-			mockApplicationDao.getApplicationById.mockResolvedValue(
-				mockApplication,
-			);
+			mockApplicationDao.getApplicationById.mockResolvedValue(mockApplication);
 
-			await expect(
-				applicationService.rejectApplicant(1),
-			).rejects.toThrow(InvalidApplicationStatusError);
+			await expect(applicationService.rejectApplicant(1)).rejects.toThrow(
+				InvalidApplicationStatusError,
+			);
 		});
 	});
 });

@@ -67,8 +67,8 @@ describe("ApplicationService", () => {
 			expect(mockApplicationDao.createApplication).toHaveBeenCalledWith({
 				userId: 1,
 				jobRoleId: 5,
-				cvKey: mockCvKey,
-				status: "IN_PROGRESS",
+				cvUrl: mockCvKey,
+				applicationStatus: "InProgress",
 			});
 			expect(mockApplicationDao.createApplication).toHaveBeenCalledOnce();
 			expect(result).toEqual(mockSavedApplication);
@@ -209,7 +209,7 @@ describe("ApplicationService", () => {
 
 			expect(mockApplicationDao.createApplication).toHaveBeenCalledWith(
 				expect.objectContaining({
-					status: "IN_PROGRESS",
+					applicationStatus: "InProgress",
 				}),
 			);
 		});

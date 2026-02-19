@@ -2,8 +2,8 @@ import type { Request, Response } from "express";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApplicationController } from "../../controllers/ApplicationController";
 import {
-	type ApplicationService,
 	ApplicationNotFoundError,
+	type ApplicationService,
 	InvalidApplicationStatusError,
 	NoOpenPositionsError,
 } from "../../services/ApplicationService";
