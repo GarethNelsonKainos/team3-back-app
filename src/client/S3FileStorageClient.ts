@@ -1,5 +1,5 @@
+import { randomUUID } from "node:crypto";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { randomUUID } from "crypto";
 
 import type FileStorageClient from "./FileStorageClient";
 

@@ -9,6 +9,7 @@ describe("ApplicationService", () => {
 	};
 	let mockApplicationDao: {
 		createApplication: ReturnType<typeof vi.fn>;
+		getApplicationByUserAndJobRole: ReturnType<typeof vi.fn>;
 	};
 	let applicationService: ApplicationService;
 
@@ -19,6 +20,7 @@ describe("ApplicationService", () => {
 
 		mockApplicationDao = {
 			createApplication: vi.fn(),
+			getApplicationByUserAndJobRole: vi.fn().mockResolvedValue(null),
 		};
 
 		applicationService = new ApplicationService(
@@ -85,6 +87,46 @@ describe("ApplicationService", () => {
 				applicationService.createApplication(applicationData),
 			).rejects.toThrow("CV file is required");
 
+			expect(mockFileStorageClient.uploadFile).not.toHaveBeenCalled();
+			expect(mockApplicationDao.createApplication).not.toHaveBeenCalled();
+		});
+
+		it("should throw error when user has already applied to job role", async () => {
+			const mockFile = {
+				fieldname: "cv",
+				originalname: "resume.pdf",
+				encoding: "7bit",
+				mimetype: "application/pdf",
+				buffer: Buffer.from("mock file content"),
+				size: 1024,
+			} as Express.Multer.File;
+
+			const applicationData = {
+				userId: 1,
+				jobRoleId: "5",
+				file: mockFile,
+			};
+
+			const existingApplication = {
+				applicationId: 10,
+				userId: 1,
+				jobRoleId: 5,
+				cvKey: "uploads/old-cv.pdf",
+				status: "PENDING",
+				createdAt: new Date(),
+			};
+
+			mockApplicationDao.getApplicationByUserAndJobRole.mockResolvedValue(
+				existingApplication,
+			);
+
+			await expect(
+				applicationService.createApplication(applicationData),
+			).rejects.toThrow("You have already applied to this job role");
+
+			expect(
+				mockApplicationDao.getApplicationByUserAndJobRole,
+			).toHaveBeenCalledWith(1, 5);
 			expect(mockFileStorageClient.uploadFile).not.toHaveBeenCalled();
 			expect(mockApplicationDao.createApplication).not.toHaveBeenCalled();
 		});
