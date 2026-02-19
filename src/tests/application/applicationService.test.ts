@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ApplicationDao } from "../../dao/ApplicationDao";
+import type { JobRoleDao } from "../../dao/JobRoleDao";
+import { ApplicationStatus } from "../../enums/ApplicationStatus";
 import {
 	ApplicationNotFoundError,
 	ApplicationService,
@@ -14,6 +16,10 @@ describe("ApplicationService", () => {
 		updateApplicationStatus: ReturnType<typeof vi.fn>;
 		decrementOpenPositions: ReturnType<typeof vi.fn>;
 	};
+	let mockJobRoleDao: {
+		getJobRoleById: ReturnType<typeof vi.fn>;
+		decrementOpenPositions: ReturnType<typeof vi.fn>;
+	};
 	let applicationService: ApplicationService;
 
 	beforeEach(() => {
@@ -24,8 +30,15 @@ describe("ApplicationService", () => {
 			decrementOpenPositions: vi.fn(),
 		};
 
+		mockJobRoleDao = {
+			getJobRoleById: vi.fn(),
+			decrementOpenPositions: vi.fn(),
+		};
+
 		applicationService = new ApplicationService(
 			mockApplicationDao as unknown as ApplicationDao,
+			null,
+			mockJobRoleDao as unknown as JobRoleDao,
 		);
 	});
 
@@ -38,6 +51,7 @@ describe("ApplicationService", () => {
 					jobRoleId: 1,
 					applicationStatus: "InProgress",
 					cvUrl: "https://s3.amazonaws.com/cv1.pdf",
+					email: "applicant@kainos.com",
 					user: {
 						userId: 2,
 						email: "applicant@kainos.com",
@@ -49,6 +63,7 @@ describe("ApplicationService", () => {
 					jobRoleId: 1,
 					applicationStatus: "Hired",
 					cvUrl: "https://s3.amazonaws.com/cv2.pdf",
+					email: "test@example.com",
 					user: {
 						userId: 3,
 						email: "test@example.com",
@@ -119,24 +134,21 @@ describe("ApplicationService", () => {
 
 			mockApplicationDao.getApplicationById.mockResolvedValue(mockApplication);
 			mockApplicationDao.updateApplicationStatus.mockResolvedValue(mockUpdated);
-			mockApplicationDao.decrementOpenPositions.mockResolvedValue({});
+			mockJobRoleDao.getJobRoleById.mockResolvedValue({
+				jobRoleId: 1,
+				numberOfOpenPositions: 3,
+			});
+			mockJobRoleDao.decrementOpenPositions.mockResolvedValue({});
 
 			const result = await applicationService.hireApplicant(1);
 
 			expect(mockApplicationDao.getApplicationById).toHaveBeenCalledWith(1);
 			expect(mockApplicationDao.updateApplicationStatus).toHaveBeenCalledWith(
 				1,
-				"Hired",
+				ApplicationStatus.Hired,
 			);
-			expect(mockApplicationDao.decrementOpenPositions).toHaveBeenCalledWith(1);
-			expect(result).toEqual({
-				applicationId: 1,
-				userId: 2,
-				email: "applicant@kainos.com",
-				jobRoleId: 1,
-				applicationStatus: "Hired",
-				cvUrl: "https://s3.amazonaws.com/cv1.pdf",
-			});
+			expect(mockJobRoleDao.decrementOpenPositions).toHaveBeenCalledWith(1);
+			expect(result).toBe(true);
 		});
 
 		it("should throw ApplicationNotFoundError when application does not exist", async () => {
@@ -183,6 +195,10 @@ describe("ApplicationService", () => {
 			};
 
 			mockApplicationDao.getApplicationById.mockResolvedValue(mockApplication);
+			mockJobRoleDao.getJobRoleById.mockResolvedValue({
+				jobRoleId: 1,
+				numberOfOpenPositions: 0,
+			});
 
 			await expect(applicationService.hireApplicant(1)).rejects.toThrow(
 				NoOpenPositionsError,
@@ -222,17 +238,10 @@ describe("ApplicationService", () => {
 			expect(mockApplicationDao.getApplicationById).toHaveBeenCalledWith(1);
 			expect(mockApplicationDao.updateApplicationStatus).toHaveBeenCalledWith(
 				1,
-				"Rejected",
+				ApplicationStatus.Rejected,
 			);
-			expect(mockApplicationDao.decrementOpenPositions).not.toHaveBeenCalled();
-			expect(result).toEqual({
-				applicationId: 1,
-				userId: 2,
-				email: "applicant@kainos.com",
-				jobRoleId: 1,
-				applicationStatus: "Rejected",
-				cvUrl: "https://s3.amazonaws.com/cv1.pdf",
-			});
+			expect(mockJobRoleDao.decrementOpenPositions).not.toHaveBeenCalled();
+			expect(result).toBe(true);
 		});
 
 		it("should throw ApplicationNotFoundError when application does not exist", async () => {
