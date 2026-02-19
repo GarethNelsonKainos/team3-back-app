@@ -11,13 +11,11 @@ import { ApplicationService } from "../services/ApplicationService";
 const applicationRouter = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
-const applicationDao = new ApplicationDao(prisma);
-
 const fileStorageClient = new S3FileStorageClient();
+const applicationDao = new ApplicationDao(prisma);
 const applicationService = new ApplicationService(applicationDao, fileStorageClient);
 const applicationController = new ApplicationController(applicationService);
 
-// POST /api/job-roles/:id/apply (applicant uploads CV)
 applicationRouter.post(
   "/api/job-roles/:id/apply",
   upload.single("cv"),
@@ -65,6 +63,28 @@ applicationRouter.put(
   "/api/applications/:id/reject",
   authMiddleware([UserRole.ADMIN]),
   (req, res) => applicationController.rejectApplicant(req, res),
+);
+
+applicationRouter.get(
+  "/api/applications/cv",
+  authMiddleware([UserRole.ADMIN]),
+  async (req, res) => {
+    const keyParam = req.query.key;
+    const key = Array.isArray(keyParam) ? keyParam[0] : keyParam;
+
+    if (typeof key !== "string" || key.trim().length === 0) {
+      return res.status(400).json({ message: "Missing key query parameter" });
+    }
+
+    try {
+      const downloadUrl = await fileStorageClient.getDownloadUrl(key);
+      return res.redirect(downloadUrl);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      console.error("CV download URL generation error:", errorMessage, err);
+      return res.status(500).json({ message: "Failed to get CV download URL" });
+    }
+  },
 );
 
 export default applicationRouter;
