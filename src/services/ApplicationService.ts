@@ -79,7 +79,7 @@ export class ApplicationService {
 		return applications.map((app: any) => ({
 			applicationId: app.applicationId,
 			userId: app.userId,
-			email: app.user?.email ?? app.email,
+			email: app.email,
 			jobRoleId: app.jobRoleId,
 			applicationStatus: app.applicationStatus,
 			cvUrl: app.cvUrl,
@@ -87,83 +87,48 @@ export class ApplicationService {
 	}
 
 	// Admin: Hire applicant
-	async hireApplicant(applicationId: number): Promise<ApplicationResponse> {
+	async hireApplicant(applicationId: number): Promise<boolean> {
 		const application =
 			await this.applicationDao.getApplicationById(applicationId);
 		if (!application) {
 			throw new ApplicationNotFoundError("Application not found");
 		}
-		if (application.applicationStatus !== "InProgress") {
+		if (application.applicationStatus !== ApplicationStatus.InProgress) {
 			throw new InvalidApplicationStatusError(
 				`Cannot hire: application status is "${application.applicationStatus}"`,
 			);
 		}
-		// Determine open positions from either the returned application.jobRole or via jobRoleDao
-		let numberOfOpenPositions: number | undefined;
-		if (
-			application.jobRole &&
-			typeof application.jobRole.numberOfOpenPositions === "number"
-		) {
-			numberOfOpenPositions = application.jobRole.numberOfOpenPositions;
-		} else if (this.jobRoleDao) {
-			const jobRole = await this.jobRoleDao.getJobRoleById(
-				application.jobRoleId,
-			);
-			numberOfOpenPositions = jobRole?.numberOfOpenPositions;
-		}
-		if (!numberOfOpenPositions || numberOfOpenPositions <= 0) {
+		const jobRole = await this.jobRoleDao.getJobRoleById(application.jobRoleId);
+		if (!jobRole || jobRole.numberOfOpenPositions <= 0) {
 			throw new NoOpenPositionsError(
 				"Cannot hire: no open positions available for this role",
 			);
 		}
 		const updated = await this.applicationDao.updateApplicationStatus(
 			applicationId,
-			"Hired",
+			ApplicationStatus.Hired,
 		);
-		// decrement via applicationDao if available, otherwise jobRoleDao
-		if (
-			typeof (this.applicationDao as any).decrementOpenPositions === "function"
-		) {
-			await (this.applicationDao as any).decrementOpenPositions(
-				application.jobRoleId,
-			);
-		} else if (this.jobRoleDao) {
-			await this.jobRoleDao.decrementOpenPositions(application.jobRoleId);
-		}
-		return {
-			applicationId: updated.applicationId,
-			userId: updated.userId,
-			email: updated.user?.email ?? updated.email,
-			jobRoleId: updated.jobRoleId,
-			applicationStatus: updated.applicationStatus,
-			cvUrl: updated.cvUrl,
-		};
+		await this.jobRoleDao.decrementOpenPositions(application.jobRoleId);
+		return true;
 	}
 
 	// Admin: Reject applicant
-	async rejectApplicant(applicationId: number): Promise<ApplicationResponse> {
+	async rejectApplicant(applicationId: number): Promise<boolean> {
 		const application =
 			await this.applicationDao.getApplicationById(applicationId);
 		if (!application) {
 			throw new ApplicationNotFoundError("Application not found");
 		}
-		if (application.applicationStatus !== "InProgress") {
+		if (application.applicationStatus !== ApplicationStatus.InProgress) {
 			throw new InvalidApplicationStatusError(
 				`Cannot reject: application status is "${application.applicationStatus}"`,
 			);
 		}
-		const updated = await this.applicationDao.updateApplicationStatus(
+		await this.applicationDao.updateApplicationStatus(
 			applicationId,
-			"Rejected",
+			ApplicationStatus.Rejected,
 		);
-		return {
-			applicationId: updated.applicationId,
-			userId: updated.userId,
-			email: updated.user?.email ?? updated.email,
-			jobRoleId: updated.jobRoleId,
-			applicationStatus: updated.applicationStatus,
-			cvUrl: updated.cvUrl,
-		};
+		return true;
 	}
 }
 

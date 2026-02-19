@@ -46,7 +46,6 @@ export default class S3FileStorageClient implements FileStorageClient {
 			});
 
 			await this.s3Client.send(command);
-			// Return the object key (not full URL) — DB stores the key
 			return key;
 		} catch (error) {
 			throw new Error(`Failed to upload file to S3: ${error}`);
