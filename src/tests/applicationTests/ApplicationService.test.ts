@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type FileStorageClient from "../../client/FileStorageClient";
-import type ApplicationDao from "../../dao/ApplicationDao";
+import type { ApplicationDao } from "../../dao/ApplicationDao";
 import ApplicationService from "../../services/ApplicationService";
 
 describe("ApplicationService", () => {
@@ -9,7 +9,6 @@ describe("ApplicationService", () => {
 	};
 	let mockApplicationDao: {
 		createApplication: ReturnType<typeof vi.fn>;
-		getApplicationByUserAndJobRole: ReturnType<typeof vi.fn>;
 	};
 	let applicationService: ApplicationService;
 
@@ -20,12 +19,11 @@ describe("ApplicationService", () => {
 
 		mockApplicationDao = {
 			createApplication: vi.fn(),
-			getApplicationByUserAndJobRole: vi.fn().mockResolvedValue(null),
 		};
 
 		applicationService = new ApplicationService(
-			mockFileStorageClient as unknown as FileStorageClient,
 			mockApplicationDao as unknown as ApplicationDao,
+			mockFileStorageClient as unknown as FileStorageClient,
 		);
 	});
 
@@ -46,17 +44,18 @@ describe("ApplicationService", () => {
 				file: mockFile,
 			};
 
-			const mockCvKey = "uploads/cv-123.pdf";
+			const mockCvUrl =
+				"https://team3-cvs.s3.eu-west-1.amazonaws.com/uploads/cv-123.pdf";
 			const mockSavedApplication = {
 				applicationId: 1,
 				userId: 1,
 				jobRoleId: 5,
-				cvKey: mockCvKey,
-				status: "PENDING",
+				cvUrl: mockCvUrl,
+				applicationStatus: "InProgress",
 				createdAt: new Date(),
 			};
 
-			mockFileStorageClient.uploadFile.mockResolvedValue(mockCvKey);
+			mockFileStorageClient.uploadFile.mockResolvedValue(mockCvUrl);
 			mockApplicationDao.createApplication.mockResolvedValue(
 				mockSavedApplication,
 			);
@@ -69,8 +68,8 @@ describe("ApplicationService", () => {
 			expect(mockApplicationDao.createApplication).toHaveBeenCalledWith({
 				userId: 1,
 				jobRoleId: 5,
-				cvKey: mockCvKey,
-				status: "IN_PROGRESS",
+				cvUrl: mockCvUrl,
+				applicationStatus: "InProgress",
 			});
 			expect(mockApplicationDao.createApplication).toHaveBeenCalledOnce();
 			expect(result).toEqual(mockSavedApplication);
@@ -80,53 +79,13 @@ describe("ApplicationService", () => {
 			const applicationData = {
 				userId: 1,
 				jobRoleId: "5",
-				file: null,
+				file: null as unknown as Express.Multer.File,
 			};
 
 			await expect(
 				applicationService.createApplication(applicationData),
 			).rejects.toThrow("CV file is required");
 
-			expect(mockFileStorageClient.uploadFile).not.toHaveBeenCalled();
-			expect(mockApplicationDao.createApplication).not.toHaveBeenCalled();
-		});
-
-		it("should throw error when user has already applied to job role", async () => {
-			const mockFile = {
-				fieldname: "cv",
-				originalname: "resume.pdf",
-				encoding: "7bit",
-				mimetype: "application/pdf",
-				buffer: Buffer.from("mock file content"),
-				size: 1024,
-			} as Express.Multer.File;
-
-			const applicationData = {
-				userId: 1,
-				jobRoleId: "5",
-				file: mockFile,
-			};
-
-			const existingApplication = {
-				applicationId: 10,
-				userId: 1,
-				jobRoleId: 5,
-				cvKey: "uploads/old-cv.pdf",
-				status: "PENDING",
-				createdAt: new Date(),
-			};
-
-			mockApplicationDao.getApplicationByUserAndJobRole.mockResolvedValue(
-				existingApplication,
-			);
-
-			await expect(
-				applicationService.createApplication(applicationData),
-			).rejects.toThrow("You have already applied to this job role");
-
-			expect(
-				mockApplicationDao.getApplicationByUserAndJobRole,
-			).toHaveBeenCalledWith(1, 5);
 			expect(mockFileStorageClient.uploadFile).not.toHaveBeenCalled();
 			expect(mockApplicationDao.createApplication).not.toHaveBeenCalled();
 		});
@@ -147,13 +106,15 @@ describe("ApplicationService", () => {
 				file: mockFile,
 			};
 
-			mockFileStorageClient.uploadFile.mockResolvedValue("uploads/cv.pdf");
+			mockFileStorageClient.uploadFile.mockResolvedValue(
+				"https://team3-cvs.s3.eu-west-1.amazonaws.com/uploads/cv.pdf",
+			);
 			mockApplicationDao.createApplication.mockResolvedValue({
 				applicationId: 1,
 				userId: 10,
 				jobRoleId: 25,
-				cvKey: "uploads/cv.pdf",
-				status: "IN_PROGRESS",
+				cvUrl: "https://team3-cvs.s3.eu-west-1.amazonaws.com/uploads/cv.pdf",
+				applicationStatus: "InProgress",
 				createdAt: new Date(),
 			});
 
@@ -237,13 +198,15 @@ describe("ApplicationService", () => {
 				file: mockFile,
 			};
 
-			mockFileStorageClient.uploadFile.mockResolvedValue("uploads/cv.pdf");
+			mockFileStorageClient.uploadFile.mockResolvedValue(
+				"https://team3-cvs.s3.eu-west-1.amazonaws.com/uploads/cv.pdf",
+			);
 			mockApplicationDao.createApplication.mockResolvedValue({
 				applicationId: 1,
 				userId: 1,
 				jobRoleId: 5,
-				cvKey: "uploads/cv.pdf",
-				status: "IN_PROGRESS",
+				cvUrl: "https://team3-cvs.s3.eu-west-1.amazonaws.com/uploads/cv.pdf",
+				applicationStatus: "InProgress",
 				createdAt: new Date(),
 			});
 
@@ -251,7 +214,7 @@ describe("ApplicationService", () => {
 
 			expect(mockApplicationDao.createApplication).toHaveBeenCalledWith(
 				expect.objectContaining({
-					status: "IN_PROGRESS",
+					applicationStatus: "InProgress",
 				}),
 			);
 		});

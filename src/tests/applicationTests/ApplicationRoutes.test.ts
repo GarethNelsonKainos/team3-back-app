@@ -1,7 +1,7 @@
 import type { Response } from "express";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type FileStorageClient from "../../client/FileStorageClient";
-import type ApplicationDao from "../../dao/ApplicationDao";
+import type { ApplicationDao } from "../../dao/ApplicationDao";
 import ApplicationService from "../../services/ApplicationService";
 
 describe("ApplicationRoutes - POST /api/job-roles/:id/apply", () => {
@@ -10,10 +10,8 @@ describe("ApplicationRoutes - POST /api/job-roles/:id/apply", () => {
 	};
 	let mockApplicationDao: {
 		createApplication: ReturnType<typeof vi.fn>;
-		getApplicationByUserAndJobRole: ReturnType<typeof vi.fn>;
 	};
 	let applicationService: ApplicationService;
-	// biome-ignore lint/suspicious/noExplicitAny: Test mock needs to match any type in production code
 	let mockRequest: any;
 	let mockResponse: Partial<Response>;
 	let responseJson: ReturnType<typeof vi.fn>;
@@ -26,21 +24,18 @@ describe("ApplicationRoutes - POST /api/job-roles/:id/apply", () => {
 
 		mockApplicationDao = {
 			createApplication: vi.fn(),
-			getApplicationByUserAndJobRole: vi.fn().mockResolvedValue(null),
 		};
 
 		applicationService = new ApplicationService(
-			mockFileStorageClient as unknown as FileStorageClient,
 			mockApplicationDao as unknown as ApplicationDao,
+			mockFileStorageClient as unknown as FileStorageClient,
 		);
 
 		responseJson = vi.fn();
 		responseStatus = vi.fn().mockReturnThis();
 
 		mockResponse = {
-			// biome-ignore lint/suspicious/noExplicitAny: Test mock casting
 			json: responseJson as any,
-			// biome-ignore lint/suspicious/noExplicitAny: Test mock casting
 			status: responseStatus as any,
 		};
 
@@ -80,9 +75,7 @@ describe("ApplicationRoutes - POST /api/job-roles/:id/apply", () => {
 			const userId = mockRequest.user?.sub;
 
 			if (!userId) {
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
 				(mockResponse.status as any)(400);
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
 				(mockResponse.json as any)({ message: "User ID is required" });
 				return;
 			}
@@ -97,13 +90,10 @@ describe("ApplicationRoutes - POST /api/job-roles/:id/apply", () => {
 					file,
 				});
 
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
 				(mockResponse.json as any)(result);
 			} catch (err) {
 				console.error(err);
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
 				(mockResponse.status as any)(500);
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
 				(mockResponse.json as any)({ message: "Failed to create application" });
 			}
 
@@ -119,9 +109,7 @@ describe("ApplicationRoutes - POST /api/job-roles/:id/apply", () => {
 			const userId = mockRequest.user?.sub;
 
 			if (!userId) {
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
 				(mockResponse.status as any)(400);
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
 				(mockResponse.json as any)({ message: "User ID is required" });
 			}
 
@@ -137,9 +125,7 @@ describe("ApplicationRoutes - POST /api/job-roles/:id/apply", () => {
 			const userId = mockRequest.user?.sub;
 
 			if (!userId) {
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
 				(mockResponse.status as any)(400);
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
 				(mockResponse.json as any)({ message: "User ID is required" });
 				return;
 			}
@@ -153,10 +139,8 @@ describe("ApplicationRoutes - POST /api/job-roles/:id/apply", () => {
 					jobRoleId,
 					file,
 				});
-			} catch (_err) {
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
+			} catch (err) {
 				(mockResponse.status as any)(500);
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
 				(mockResponse.json as any)({ message: "Failed to create application" });
 			}
 
@@ -176,9 +160,7 @@ describe("ApplicationRoutes - POST /api/job-roles/:id/apply", () => {
 			const userId = mockRequest.user?.sub;
 
 			if (!userId) {
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
 				(mockResponse.status as any)(400);
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
 				(mockResponse.json as any)({ message: "User ID is required" });
 				return;
 			}
@@ -192,10 +174,8 @@ describe("ApplicationRoutes - POST /api/job-roles/:id/apply", () => {
 					jobRoleId,
 					file,
 				});
-			} catch (_err) {
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
+			} catch (err) {
 				(mockResponse.status as any)(500);
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
 				(mockResponse.json as any)({ message: "Failed to create application" });
 			}
 
@@ -214,9 +194,7 @@ describe("ApplicationRoutes - POST /api/job-roles/:id/apply", () => {
 			const userId = mockRequest.user?.sub;
 
 			if (!userId) {
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
 				(mockResponse.status as any)(400);
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
 				(mockResponse.json as any)({ message: "User ID is required" });
 				return;
 			}
@@ -230,10 +208,8 @@ describe("ApplicationRoutes - POST /api/job-roles/:id/apply", () => {
 					jobRoleId,
 					file,
 				});
-			} catch (_err) {
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
+			} catch (err) {
 				(mockResponse.status as any)(500);
-				// biome-ignore lint/suspicious/noExplicitAny: Test mock
 				(mockResponse.json as any)({ message: "Failed to create application" });
 			}
 

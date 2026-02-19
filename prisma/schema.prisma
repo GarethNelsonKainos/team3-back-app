@@ -22,6 +22,7 @@ model JobRole {
   bandId       Int
   status       Status     @relation(fields: [statusId], references: [statusId])
   statusId     Int
+  applications Application[]
 
   @@unique([roleName, location], name: "uniqueId")
 }
@@ -38,7 +39,7 @@ model Band {
   jobRoles JobRole[]
 }
 
-model Status{
+model Status {
   statusId   Int       @id @default(autoincrement())
   statusName StatusName @unique
   jobRoles   JobRole[]
@@ -49,15 +50,25 @@ model User {
   email        String @unique
   passwordHash String
   role         String @default("APPLICANT")
+  applications Application[]
 }
 
 model Application {
-  applicationId Int       @id @default(autoincrement())
-  userId       Int
-  jobRoleId    Int
-  cvKey        String
-  status       String    
-  createdAt    DateTime  @default(now())
+  applicationId     Int               @id @default(autoincrement())
+  user              User              @relation(fields: [userId], references: [userId])
+  userId            Int
+  jobRole           JobRole           @relation(fields: [jobRoleId], references: [jobRoleId])
+  jobRoleId         Int
+  applicationStatus ApplicationStatus @default(InProgress)
+  cvUrl             String
+
+  @@unique([userId, jobRoleId], name: "uniqueApplication")
+}
+
+enum ApplicationStatus {
+  InProgress
+  Hired
+  Rejected
 }
 
 enum StatusName {
