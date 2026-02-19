@@ -51,6 +51,15 @@ model User {
   role         String @default("APPLICANT")
 }
 
+model Application {
+  applicationId Int       @id @default(autoincrement())
+  userId       Int
+  jobRoleId    Int
+  cvKey        String
+  status       String    
+  createdAt    DateTime  @default(now())
+}
+
 enum StatusName {
   Open
   Closed
