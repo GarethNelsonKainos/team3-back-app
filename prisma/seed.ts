@@ -551,59 +551,6 @@ async function main() {
 	]);
 	console.log(`Created ${users.length} users`);
 
-	// Seed Applications
-	const applications = await Promise.all([
-		prismaSeedClient.application.upsert({
-			where: {
-				uniqueApplication: {
-					userId: users[1].userId,
-					jobRoleId: jobRoles[0].jobRoleId,
-				},
-			},
-			update: {},
-			create: {
-				userId: users[1].userId,
-				jobRoleId: jobRoles[0].jobRoleId,
-				applicationStatus: "InProgress",
-				cvUrl:
-					"https://team3-cvs.s3.eu-west-1.amazonaws.com/applicant-cv-1.pdf",
-			},
-		}),
-		prismaSeedClient.application.upsert({
-			where: {
-				uniqueApplication: {
-					userId: users[3].userId,
-					jobRoleId: jobRoles[0].jobRoleId,
-				},
-			},
-			update: {},
-			create: {
-				userId: users[3].userId,
-				jobRoleId: jobRoles[0].jobRoleId,
-				applicationStatus: "InProgress",
-				cvUrl:
-					"https://team3-cvs.s3.eu-west-1.amazonaws.com/test-user-cv-1.pdf",
-			},
-		}),
-		prismaSeedClient.application.upsert({
-			where: {
-				uniqueApplication: {
-					userId: users[1].userId,
-					jobRoleId: jobRoles[1].jobRoleId,
-				},
-			},
-			update: {},
-			create: {
-				userId: users[1].userId,
-				jobRoleId: jobRoles[1].jobRoleId,
-				applicationStatus: "InProgress",
-				cvUrl:
-					"https://team3-cvs.s3.eu-west-1.amazonaws.com/applicant-cv-2.pdf",
-			},
-		}),
-	]);
-	console.log(`Created ${applications.length} applications`);
-
 	console.log("Seed completed successfully!");
 }
 

@@ -1,10 +1,6 @@
-import {
-	GetObjectCommand,
-	PutObjectCommand,
-	S3Client,
-} from "@aws-sdk/client-s3";
+import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 
 import type FileStorageClient from "./FileStorageClient";
 
@@ -46,6 +42,7 @@ export default class S3FileStorageClient implements FileStorageClient {
 			});
 
 			await this.s3Client.send(command);
+			// Return the object key (not full URL) — DB stores the key
 			return key;
 		} catch (error) {
 			throw new Error(`Failed to upload file to S3: ${error}`);
@@ -61,11 +58,7 @@ export default class S3FileStorageClient implements FileStorageClient {
 
 			return await getSignedUrl(this.s3Client, command, { expiresIn: 3600 });
 		} catch (error) {
-			throw new Error(`Failed to generate pre-signed URL: ${String(error)}`);
+			throw new Error(`Failed to generate download URL: ${error}`);
 		}
-	}
-
-	async getSignedUrl(key: string): Promise<string> {
-		return this.getDownloadUrl(key);
 	}
 }

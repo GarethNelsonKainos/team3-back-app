@@ -42,4 +42,15 @@ export class JobRoleDao {
 			},
 		});
 	}
+
+	async decrementOpenPositions(jobRoleId: number) {
+		return await this.prisma.jobRole.update({
+			where: { jobRoleId },
+			data: {
+				numberOfOpenPositions: {
+					decrement: 1,
+				},
+			},
+		});
+	}
 }

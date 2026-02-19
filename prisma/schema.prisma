@@ -1,6 +1,6 @@
 generator client {
-  provider   = "prisma-client"
-  output     = "../src/generated"
+  provider = "prisma-client"
+  output   = "../src/generated"
 }
 
 datasource db {
@@ -8,21 +8,21 @@ datasource db {
 }
 
 model JobRole {
-  jobRoleId    Int       @id @default(autoincrement())
-  roleName     String
-  location    String
-  closingDate  DateTime
-  description String
-  responsibilities String
+  jobRoleId             Int           @id @default(autoincrement())
+  roleName              String
+  location              String
+  closingDate           DateTime
+  description           String
+  responsibilities      String
   numberOfOpenPositions Int
-  sharepointUrl String
-  capability   Capability @relation(fields: [capabilityId], references: [capabilityId])
-  capabilityId Int
-  band         Band       @relation(fields: [bandId], references: [bandId])
-  bandId       Int
-  status       Status     @relation(fields: [statusId], references: [statusId])
-  statusId     Int
-  applications Application[]
+  sharepointUrl         String
+  capability            Capability    @relation(fields: [capabilityId], references: [capabilityId])
+  capabilityId          Int
+  band                  Band          @relation(fields: [bandId], references: [bandId])
+  bandId                Int
+  status                Status        @relation(fields: [statusId], references: [statusId])
+  statusId              Int
+  applications          Application[]
 
   @@unique([roleName, location], name: "uniqueId")
 }
@@ -40,16 +40,16 @@ model Band {
 }
 
 model Status {
-  statusId   Int       @id @default(autoincrement())
+  statusId   Int        @id @default(autoincrement())
   statusName StatusName @unique
   jobRoles   JobRole[]
 }
 
 model User {
-  userId       Int    @id @default(autoincrement())
-  email        String @unique
+  userId       Int           @id @default(autoincrement())
+  email        String        @unique
   passwordHash String
-  role         String @default("APPLICANT")
+  role         String        @default("APPLICANT")
   applications Application[]
 }
 
@@ -75,4 +75,3 @@ enum StatusName {
   Open
   Closed
 }
-

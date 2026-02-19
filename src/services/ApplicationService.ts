@@ -1,6 +1,7 @@
 import type FileStorageClient from "../client/FileStorageClient";
 import type { ApplicationDao } from "../dao/ApplicationDao";
-import { ApplicationStatus } from "../generated/client";
+import type { JobRoleDao } from "../dao/JobRoleDao";
+import { ApplicationStatus } from "../enums/ApplicationStatus";
 import type { ApplicationResponse } from "../models/ApplicationResponse";
 
 export class ApplicationNotFoundError extends Error {
@@ -26,14 +27,17 @@ export class NoOpenPositionsError extends Error {
 
 export class ApplicationService {
 	private applicationDao: ApplicationDao;
+	private jobRoleDao: JobRoleDao;
 	private fileStorageClient: FileStorageClient | null;
 
 	constructor(
 		applicationDao: ApplicationDao,
 		fileStorageClient: FileStorageClient | null = null,
+		jobRoleDao?: JobRoleDao,
 	) {
 		this.applicationDao = applicationDao;
 		this.fileStorageClient = fileStorageClient;
+		this.jobRoleDao = jobRoleDao as JobRoleDao;
 	}
 
 	// Applicant: Create application with CV upload (S3)
@@ -61,7 +65,7 @@ export class ApplicationService {
 					? parseInt(applicationData.jobRoleId as string, 10)
 					: applicationData.jobRoleId,
 			cvUrl: fileUrl,
-			applicationStatus: ApplicationStatus.InProgress,
+			applicationStatus: "InProgress",
 		});
 		return saved;
 	}
@@ -74,8 +78,8 @@ export class ApplicationService {
 			await this.applicationDao.getApplicationsByJobRoleId(jobRoleId);
 		return applications.map((app: any) => ({
 			applicationId: app.applicationId,
-			userId: app.user.userId,
-			email: app.user.email,
+			userId: app.userId,
+			email: app.user?.email ?? app.email,
 			jobRoleId: app.jobRoleId,
 			applicationStatus: app.applicationStatus,
 			cvUrl: app.cvUrl,
@@ -89,25 +93,38 @@ export class ApplicationService {
 		if (!application) {
 			throw new ApplicationNotFoundError("Application not found");
 		}
-		if (application.applicationStatus !== ApplicationStatus.InProgress) {
+		if (application.applicationStatus !== "InProgress") {
 			throw new InvalidApplicationStatusError(
 				`Cannot hire: application status is "${application.applicationStatus}"`,
 			);
 		}
-		if (application.jobRole.numberOfOpenPositions <= 0) {
+		// Determine open positions from either the returned application.jobRole or via jobRoleDao
+		let numberOfOpenPositions: number | undefined = undefined;
+		if (application.jobRole && typeof application.jobRole.numberOfOpenPositions === 'number') {
+			numberOfOpenPositions = application.jobRole.numberOfOpenPositions;
+		} else if (this.jobRoleDao) {
+			const jobRole = await this.jobRoleDao.getJobRoleById(application.jobRoleId);
+			numberOfOpenPositions = jobRole?.numberOfOpenPositions;
+		}
+		if (!numberOfOpenPositions || numberOfOpenPositions <= 0) {
 			throw new NoOpenPositionsError(
 				"Cannot hire: no open positions available for this role",
 			);
 		}
 		const updated = await this.applicationDao.updateApplicationStatus(
 			applicationId,
-			ApplicationStatus.Hired,
+			"Hired",
 		);
-		await this.applicationDao.decrementOpenPositions(application.jobRoleId);
+		// decrement via applicationDao if available, otherwise jobRoleDao
+		if (typeof (this.applicationDao as any).decrementOpenPositions === 'function') {
+			await (this.applicationDao as any).decrementOpenPositions(application.jobRoleId);
+		} else if (this.jobRoleDao) {
+			await this.jobRoleDao.decrementOpenPositions(application.jobRoleId);
+		}
 		return {
 			applicationId: updated.applicationId,
-			userId: updated.user.userId,
-			email: updated.user.email,
+			userId: updated.userId,
+			email: updated.user?.email ?? updated.email,
 			jobRoleId: updated.jobRoleId,
 			applicationStatus: updated.applicationStatus,
 			cvUrl: updated.cvUrl,
@@ -121,19 +138,19 @@ export class ApplicationService {
 		if (!application) {
 			throw new ApplicationNotFoundError("Application not found");
 		}
-		if (application.applicationStatus !== ApplicationStatus.InProgress) {
+		if (application.applicationStatus !== "InProgress") {
 			throw new InvalidApplicationStatusError(
 				`Cannot reject: application status is "${application.applicationStatus}"`,
 			);
 		}
 		const updated = await this.applicationDao.updateApplicationStatus(
 			applicationId,
-			ApplicationStatus.Rejected,
+			"Rejected",
 		);
 		return {
 			applicationId: updated.applicationId,
-			userId: updated.user.userId,
-			email: updated.user.email,
+			userId: updated.userId,
+			email: updated.user?.email ?? updated.email,
 			jobRoleId: updated.jobRoleId,
 			applicationStatus: updated.applicationStatus,
 			cvUrl: updated.cvUrl,

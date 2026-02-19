@@ -44,17 +44,17 @@ describe("ApplicationService", () => {
 				file: mockFile,
 			};
 
-			const mockCvKey = "uploads/cv-123.pdf";
+			const mockCvUrl = "https://team3-cvs.s3.eu-west-1.amazonaws.com/uploads/cv-123.pdf";
 			const mockSavedApplication = {
 				applicationId: 1,
 				userId: 1,
 				jobRoleId: 5,
-				cvKey: mockCvKey,
-				status: "PENDING",
+				cvUrl: mockCvUrl,
+				applicationStatus: "InProgress",
 				createdAt: new Date(),
 			};
 
-			mockFileStorageClient.uploadFile.mockResolvedValue(mockCvKey);
+			mockFileStorageClient.uploadFile.mockResolvedValue(mockCvUrl);
 			mockApplicationDao.createApplication.mockResolvedValue(
 				mockSavedApplication,
 			);
@@ -67,7 +67,7 @@ describe("ApplicationService", () => {
 			expect(mockApplicationDao.createApplication).toHaveBeenCalledWith({
 				userId: 1,
 				jobRoleId: 5,
-				cvUrl: mockCvKey,
+				cvUrl: mockCvUrl,
 				applicationStatus: "InProgress",
 			});
 			expect(mockApplicationDao.createApplication).toHaveBeenCalledOnce();
@@ -105,13 +105,13 @@ describe("ApplicationService", () => {
 				file: mockFile,
 			};
 
-			mockFileStorageClient.uploadFile.mockResolvedValue("uploads/cv.pdf");
+			mockFileStorageClient.uploadFile.mockResolvedValue("https://team3-cvs.s3.eu-west-1.amazonaws.com/uploads/cv.pdf");
 			mockApplicationDao.createApplication.mockResolvedValue({
 				applicationId: 1,
 				userId: 10,
 				jobRoleId: 25,
-				cvKey: "uploads/cv.pdf",
-				status: "IN_PROGRESS",
+				cvUrl: "https://team3-cvs.s3.eu-west-1.amazonaws.com/uploads/cv.pdf",
+				applicationStatus: "InProgress",
 				createdAt: new Date(),
 			});
 
@@ -195,13 +195,13 @@ describe("ApplicationService", () => {
 				file: mockFile,
 			};
 
-			mockFileStorageClient.uploadFile.mockResolvedValue("uploads/cv.pdf");
+			mockFileStorageClient.uploadFile.mockResolvedValue("https://team3-cvs.s3.eu-west-1.amazonaws.com/uploads/cv.pdf");
 			mockApplicationDao.createApplication.mockResolvedValue({
 				applicationId: 1,
 				userId: 1,
 				jobRoleId: 5,
-				cvKey: "uploads/cv.pdf",
-				status: "IN_PROGRESS",
+				cvUrl: "https://team3-cvs.s3.eu-west-1.amazonaws.com/uploads/cv.pdf",
+				applicationStatus: "InProgress",
 				createdAt: new Date(),
 			});
 
