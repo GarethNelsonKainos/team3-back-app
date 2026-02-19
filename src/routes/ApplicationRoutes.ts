@@ -6,15 +6,17 @@ import { ApplicationDao } from "../dao/ApplicationDao";
 import { UserRole } from "../enums/UserRole";
 import { type AuthRequest, authMiddleware } from "../middleware/authMiddleware";
 import { prisma } from "../prisma";
-import { ApplicationService } from "../services/ApplicationService";
+import ApplicationService from "../services/ApplicationService";
 
 const applicationRouter = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 const fileStorageClient = new S3FileStorageClient();
+// Instantiate dependencies for assess endpoints (admin)
 const applicationDao = new ApplicationDao(prisma);
-const applicationService = new ApplicationService(applicationDao, fileStorageClient);
-const applicationController = new ApplicationController(applicationService);
+const applicationController = new ApplicationController(
+	new ApplicationService(applicationDao, null as any),
+);
 
 applicationRouter.post(
   "/api/job-roles/:id/apply",
@@ -32,7 +34,10 @@ applicationRouter.post(
       return res.status(400).json({ message: "CV file is required" });
     }
     try {
-      const result = await applicationService.createApplication({
+      // Create S3 client lazily only when needed
+      const fileStorageClient = new S3FileStorageClient();
+      const applyService = new ApplicationService(applicationDao, fileStorageClient);
+      const result = await applyService.createApplication({
         userId,
         jobRoleId,
         file,
@@ -65,6 +70,7 @@ applicationRouter.put(
   (req, res) => applicationController.rejectApplicant(req, res),
 );
 
+// Download CV via pre-signed S3 URL
 applicationRouter.get(
   "/api/applications/cv",
   authMiddleware([UserRole.ADMIN]),

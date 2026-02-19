@@ -57,7 +57,12 @@ export default class S3FileStorageClient implements FileStorageClient {
 
 			return await getSignedUrl(this.s3Client, command, { expiresIn: 3600 });
 		} catch (error) {
-			throw new Error(`Failed to generate pre-signed URL: ${error}`);
+			throw new Error(`Failed to generate pre-signed URL: ${String(error)}`);
 		}
+    }
+
+	async getSignedUrl(key: string): Promise<string> {
+		return this.getDownloadUrl(key);
 	}
+
 }

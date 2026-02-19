@@ -1,7 +1,7 @@
 import type { Response } from "express";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type FileStorageClient from "../../client/FileStorageClient";
-import type ApplicationDao from "../../dao/ApplicationDao";
+import type { ApplicationDao } from "../../dao/ApplicationDao";
 import ApplicationService from "../../services/ApplicationService";
 
 describe("ApplicationRoutes - POST /api/job-roles/:id/apply", () => {
@@ -27,8 +27,8 @@ describe("ApplicationRoutes - POST /api/job-roles/:id/apply", () => {
 		};
 
 		applicationService = new ApplicationService(
-			mockFileStorageClient as unknown as FileStorageClient,
 			mockApplicationDao as unknown as ApplicationDao,
+			mockFileStorageClient as unknown as FileStorageClient,
 		);
 
 		responseJson = vi.fn();

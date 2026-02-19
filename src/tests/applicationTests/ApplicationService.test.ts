@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type FileStorageClient from "../../client/FileStorageClient";
-import type ApplicationDao from "../../dao/ApplicationDao";
+import type { ApplicationDao } from "../../dao/ApplicationDao";
 import ApplicationService from "../../services/ApplicationService";
 
 describe("ApplicationService", () => {
@@ -22,8 +22,8 @@ describe("ApplicationService", () => {
 		};
 
 		applicationService = new ApplicationService(
-			mockFileStorageClient as unknown as FileStorageClient,
 			mockApplicationDao as unknown as ApplicationDao,
+			mockFileStorageClient as unknown as FileStorageClient,
 		);
 	});
 
@@ -78,7 +78,7 @@ describe("ApplicationService", () => {
 			const applicationData = {
 				userId: 1,
 				jobRoleId: "5",
-				file: null,
+				file: null as unknown as Express.Multer.File,
 			};
 
 			await expect(
