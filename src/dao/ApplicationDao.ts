@@ -8,4 +8,9 @@ export default class ApplicationDao {
 			data,
 		});
 	}
+	async getApplicationByUserAndJobRole(userId: number, jobRoleId: number) {
+		return prisma.application.findFirst({
+			where: { userId, jobRoleId },
+		});
+	}
 }

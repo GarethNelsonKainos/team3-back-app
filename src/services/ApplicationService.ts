@@ -15,6 +15,15 @@ export default class ApplicationService {
 	}
 
 	async createApplication(applicationData: any) {
+		const existingApplication =
+			await this.applicationDao.getApplicationByUserAndJobRole(
+				applicationData.userId,
+				Number(applicationData.jobRoleId),
+			);
+
+		if (existingApplication) {
+			throw new Error("You have already applied to this job role");
+		}
 		if (!applicationData.file) {
 			throw new Error("CV file is required");
 		}

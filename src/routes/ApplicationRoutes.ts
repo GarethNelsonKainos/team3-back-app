@@ -40,7 +40,18 @@ applicationRouter.post(
 			res.json(result);
 		} catch (err) {
 			console.error(err);
-			res.status(500).json({ message: "Failed to create application" });
+			const errorMessage =
+				err instanceof Error ? err.message : "Failed to create application";
+
+			if (errorMessage === "You have already applied to this job role") {
+				return res.status(409).json({ message: errorMessage });
+			}
+
+			if (errorMessage === "CV file is required") {
+				return res.status(400).json({ message: errorMessage });
+			}
+
+			res.status(500).json({ message: errorMessage });
 		}
 	},
 );

@@ -10,6 +10,7 @@ describe("ApplicationRoutes - POST /api/job-roles/:id/apply", () => {
 	};
 	let mockApplicationDao: {
 		createApplication: ReturnType<typeof vi.fn>;
+		getApplicationByUserAndJobRole: ReturnType<typeof vi.fn>;
 	};
 	let applicationService: ApplicationService;
 	let mockRequest: any;
@@ -24,6 +25,7 @@ describe("ApplicationRoutes - POST /api/job-roles/:id/apply", () => {
 
 		mockApplicationDao = {
 			createApplication: vi.fn(),
+			getApplicationByUserAndJobRole: vi.fn().mockResolvedValue(null),
 		};
 
 		applicationService = new ApplicationService(
