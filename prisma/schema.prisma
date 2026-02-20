@@ -59,16 +59,10 @@ model Application {
   userId            Int
   jobRole           JobRole           @relation(fields: [jobRoleId], references: [jobRoleId])
   jobRoleId         Int
-  applicationStatus ApplicationStatus @default(InProgress)
+  applicationStatus String            @default("InProgress")
   cvUrl             String
 
   @@unique([userId, jobRoleId], name: "uniqueApplication")
-}
-
-enum ApplicationStatus {
-  InProgress
-  Hired
-  Rejected
 }
 
 enum StatusName {
