@@ -1,5 +1,5 @@
+import type { ApplicationStatus } from "../enums/ApplicationStatus";
 import type { PrismaClient } from "../generated/client";
-import { ApplicationStatus } from "../enums/ApplicationStatus";
 
 export class ApplicationDao {
 	private prisma: PrismaClient;
@@ -72,14 +72,12 @@ export class ApplicationDao {
 		};
 	}
 
-	async createApplication(
-		data: {
-			userId: number;
-			jobRoleId: number;
-			cvUrl: string;
-			applicationStatus: ApplicationStatus;
-		},
-	) {
+	async createApplication(data: {
+		userId: number;
+		jobRoleId: number;
+		cvUrl: string;
+		applicationStatus: ApplicationStatus;
+	}) {
 		// Write data as provided (schema expects cvUrl and applicationStatus)
 		return this.prisma.application.create({
 			data,

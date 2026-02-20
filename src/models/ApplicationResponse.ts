@@ -1,4 +1,4 @@
-import { ApplicationStatus } from "../enums/ApplicationStatus";
+import type { ApplicationStatus } from "../enums/ApplicationStatus";
 
 export interface ApplicationResponse {
 	applicationId: number;
