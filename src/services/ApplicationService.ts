@@ -65,7 +65,7 @@ export class ApplicationService {
 					? parseInt(applicationData.jobRoleId as string, 10)
 					: applicationData.jobRoleId,
 			cvUrl: fileUrl,
-			applicationStatus: "InProgress",
+			applicationStatus: ApplicationStatus.InProgress,
 		});
 		return saved;
 	}
