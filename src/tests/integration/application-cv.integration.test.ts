@@ -1,7 +1,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import request from "supertest";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import { UserRole } from "../../enums/UserRole";
 import { authMiddleware } from "../../middleware/authMiddleware";
 
@@ -76,9 +76,16 @@ function createApp(applicationDao: any, fileStorageClient: any) {
 	return app;
 }
 
+const JWT_SECRET = "test-secret";
+const originalJwtSecret = process.env.JWT_SECRET;
+
 describe("CV download integration", () => {
 	beforeEach(() => {
-		process.env.JWT_SECRET = "test-secret";
+		process.env.JWT_SECRET = JWT_SECRET;
+	});
+
+	afterEach(() => {
+		process.env.JWT_SECRET = originalJwtSecret;
 	});
 
 	it("redirects to signed URL when application cvUrl is a storage key", async () => {
