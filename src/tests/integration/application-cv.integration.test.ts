@@ -28,9 +28,8 @@ function createApp(applicationDao: any, fileStorageClient: any) {
 			}
 
 			try {
-				const application = await applicationDao.getApplicationById(
-					applicationId,
-				);
+				const application =
+					await applicationDao.getApplicationById(applicationId);
 
 				if (!application) {
 					return res.status(404).json({ message: "Application not found" });
@@ -63,9 +62,8 @@ function createApp(applicationDao: any, fileStorageClient: any) {
 					return res.redirect(normalizedKey);
 				}
 
-				const downloadUrl = await fileStorageClient.getDownloadUrl(
-					normalizedKey,
-				);
+				const downloadUrl =
+					await fileStorageClient.getDownloadUrl(normalizedKey);
 				return res.redirect(downloadUrl);
 			} catch (err) {
 				return res
@@ -94,12 +92,17 @@ describe("CV download integration", () => {
 		} as any;
 
 		const fileStorageClient = {
-			getDownloadUrl: vi.fn().mockResolvedValue("https://signed.example.com/key"),
+			getDownloadUrl: vi
+				.fn()
+				.mockResolvedValue("https://signed.example.com/key"),
 		} as any;
 
 		const app = createApp(applicationDao, fileStorageClient);
 
-		const token = jwt.sign({ sub: 1, email: "a@b.com", role: UserRole.ADMIN }, process.env.JWT_SECRET as string);
+		const token = jwt.sign(
+			{ sub: 1, email: "a@b.com", role: UserRole.ADMIN },
+			process.env.JWT_SECRET as string,
+		);
 
 		const res = await request(app)
 			.get("/api/applications/cv")
@@ -109,7 +112,9 @@ describe("CV download integration", () => {
 		expect(res.status).toBe(302);
 		expect(res.headers.location).toBe("https://signed.example.com/key");
 		expect(applicationDao.getApplicationById).toHaveBeenCalledWith(1);
-		expect(fileStorageClient.getDownloadUrl).toHaveBeenCalledWith("applications/test-cv.pdf");
+		expect(fileStorageClient.getDownloadUrl).toHaveBeenCalledWith(
+			"applications/test-cv.pdf",
+		);
 	});
 
 	it("returns 400 for non-numeric applicationId", async () => {
@@ -117,7 +122,10 @@ describe("CV download integration", () => {
 		const fileStorageClient = { getDownloadUrl: vi.fn() } as any;
 		const app = createApp(applicationDao, fileStorageClient);
 
-		const token = jwt.sign({ sub: 1, email: "a@b.com", role: UserRole.ADMIN }, process.env.JWT_SECRET as string);
+		const token = jwt.sign(
+			{ sub: 1, email: "a@b.com", role: UserRole.ADMIN },
+			process.env.JWT_SECRET as string,
+		);
 
 		const res = await request(app)
 			.get("/api/applications/cv")
@@ -129,11 +137,16 @@ describe("CV download integration", () => {
 	});
 
 	it("returns 404 when application not found", async () => {
-		const applicationDao = { getApplicationById: vi.fn().mockResolvedValue(null) } as any;
+		const applicationDao = {
+			getApplicationById: vi.fn().mockResolvedValue(null),
+		} as any;
 		const fileStorageClient = { getDownloadUrl: vi.fn() } as any;
 		const app = createApp(applicationDao, fileStorageClient);
 
-		const token = jwt.sign({ sub: 1, email: "a@b.com", role: UserRole.ADMIN }, process.env.JWT_SECRET as string);
+		const token = jwt.sign(
+			{ sub: 1, email: "a@b.com", role: UserRole.ADMIN },
+			process.env.JWT_SECRET as string,
+		);
 
 		const res = await request(app)
 			.get("/api/applications/cv")
@@ -149,7 +162,10 @@ describe("CV download integration", () => {
 		const fileStorageClient = { getDownloadUrl: vi.fn() } as any;
 		const app = createApp(applicationDao, fileStorageClient);
 
-		const token = jwt.sign({ sub: 2, email: "user@example.com", role: UserRole.APPLICANT }, process.env.JWT_SECRET as string);
+		const token = jwt.sign(
+			{ sub: 2, email: "user@example.com", role: UserRole.APPLICANT },
+			process.env.JWT_SECRET as string,
+		);
 
 		const res = await request(app)
 			.get("/api/applications/cv")
@@ -161,12 +177,24 @@ describe("CV download integration", () => {
 	});
 
 	it("normalizes full HTTPS URL to key and calls storage client", async () => {
-		const mockApplication = { applicationId: 3, cvUrl: "https://example.com/path/file.pdf" };
-		const applicationDao = { getApplicationById: vi.fn().mockResolvedValue(mockApplication) } as any;
-		const fileStorageClient = { getDownloadUrl: vi.fn().mockResolvedValue("https://signed.example.com/path/file.pdf") } as any;
+		const mockApplication = {
+			applicationId: 3,
+			cvUrl: "https://example.com/path/file.pdf",
+		};
+		const applicationDao = {
+			getApplicationById: vi.fn().mockResolvedValue(mockApplication),
+		} as any;
+		const fileStorageClient = {
+			getDownloadUrl: vi
+				.fn()
+				.mockResolvedValue("https://signed.example.com/path/file.pdf"),
+		} as any;
 		const app = createApp(applicationDao, fileStorageClient);
 
-		const token = jwt.sign({ sub: 1, email: "a@b.com", role: UserRole.ADMIN }, process.env.JWT_SECRET as string);
+		const token = jwt.sign(
+			{ sub: 1, email: "a@b.com", role: UserRole.ADMIN },
+			process.env.JWT_SECRET as string,
+		);
 
 		const res = await request(app)
 			.get("/api/applications/cv")
@@ -174,17 +202,26 @@ describe("CV download integration", () => {
 			.set("Authorization", `Bearer ${token}`);
 
 		expect(res.status).toBe(302);
-		expect(fileStorageClient.getDownloadUrl).toHaveBeenCalledWith("path/file.pdf");
-		expect(res.headers.location).toBe("https://signed.example.com/path/file.pdf");
+		expect(fileStorageClient.getDownloadUrl).toHaveBeenCalledWith(
+			"path/file.pdf",
+		);
+		expect(res.headers.location).toBe(
+			"https://signed.example.com/path/file.pdf",
+		);
 	});
 
 	it("redirects directly when normalize returns the original https URL (empty pathname)", async () => {
 		const mockApplication = { applicationId: 4, cvUrl: "https://example.com" };
-		const applicationDao = { getApplicationById: vi.fn().mockResolvedValue(mockApplication) } as any;
+		const applicationDao = {
+			getApplicationById: vi.fn().mockResolvedValue(mockApplication),
+		} as any;
 		const fileStorageClient = { getDownloadUrl: vi.fn() } as any;
 		const app = createApp(applicationDao, fileStorageClient);
 
-		const token = jwt.sign({ sub: 1, email: "a@b.com", role: UserRole.ADMIN }, process.env.JWT_SECRET as string);
+		const token = jwt.sign(
+			{ sub: 1, email: "a@b.com", role: UserRole.ADMIN },
+			process.env.JWT_SECRET as string,
+		);
 
 		const res = await request(app)
 			.get("/api/applications/cv")
@@ -197,12 +234,22 @@ describe("CV download integration", () => {
 	});
 
 	it("returns 500 when storage client throws", async () => {
-		const mockApplication = { applicationId: 5, cvUrl: "applications/fail.pdf" };
-		const applicationDao = { getApplicationById: vi.fn().mockResolvedValue(mockApplication) } as any;
-		const fileStorageClient = { getDownloadUrl: vi.fn().mockRejectedValue(new Error("S3 error")) } as any;
+		const mockApplication = {
+			applicationId: 5,
+			cvUrl: "applications/fail.pdf",
+		};
+		const applicationDao = {
+			getApplicationById: vi.fn().mockResolvedValue(mockApplication),
+		} as any;
+		const fileStorageClient = {
+			getDownloadUrl: vi.fn().mockRejectedValue(new Error("S3 error")),
+		} as any;
 		const app = createApp(applicationDao, fileStorageClient);
 
-		const token = jwt.sign({ sub: 1, email: "a@b.com", role: UserRole.ADMIN }, process.env.JWT_SECRET as string);
+		const token = jwt.sign(
+			{ sub: 1, email: "a@b.com", role: UserRole.ADMIN },
+			process.env.JWT_SECRET as string,
+		);
 
 		const res = await request(app)
 			.get("/api/applications/cv")
@@ -210,6 +257,8 @@ describe("CV download integration", () => {
 			.set("Authorization", `Bearer ${token}`);
 
 		expect(res.status).toBe(500);
-		expect(res.body).toMatchObject({ message: "Failed to get CV download URL" });
+		expect(res.body).toMatchObject({
+			message: "Failed to get CV download URL",
+		});
 	});
 });
