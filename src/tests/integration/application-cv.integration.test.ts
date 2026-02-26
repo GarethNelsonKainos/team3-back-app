@@ -1,7 +1,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import request from "supertest";
-import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { UserRole } from "../../enums/UserRole";
 import { authMiddleware } from "../../middleware/authMiddleware";
 
