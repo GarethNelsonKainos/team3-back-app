@@ -13,8 +13,19 @@ RUN npm run build
 # Remove devDependencies and keep only production deps to copy into runner
 RUN npm prune --production
 
+# Remove Prisma Studio and any platform-specific or DB-specific wasm/binaries we don't need
+RUN rm -rf node_modules/@prisma/studio-core || true
+RUN find node_modules/@prisma -type f \( -iname '*sqlite*' -o -iname '*mysql*' -o -iname '*sqlserver*' -o -iname '*cockroach*' -o -iname '*darwin*' -o -iname '*windows*' \) -delete || true
+
+# Remove known dev-only packages that sometimes remain as transitive deps
+# (prisma CLI, typescript, react-dom are not required at runtime)
+RUN rm -rf node_modules/prisma \
+	node_modules/typescript \
+	node_modules/react-dom || true
+
 # Ensure files are owned by a deterministic numeric UID so runner can switch to it
 RUN chown -R 1000:1000 /app
+
 
 
 FROM node:20-slim AS runner
