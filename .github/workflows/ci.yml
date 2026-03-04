@@ -29,3 +29,24 @@ jobs:
 
       - name: Run Linter
         run: npm run lint
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Compute image tag
+        id: image_tag
+        run: |
+          SHORT_SHA="${GITHUB_SHA::12}"
+          echo "image_tag=sha-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          load: true
+          tags: team3-back-app:${{ steps.image_tag.outputs.image_tag }}
+
+      - name: Verify built tag exists
+        run: docker image inspect team3-back-app:${{ steps.image_tag.outputs.image_tag }}
