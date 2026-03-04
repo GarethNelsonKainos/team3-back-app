@@ -7,6 +7,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      IS_MAIN_PUSH: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
     steps:
       - uses: actions/checkout@v4
@@ -34,19 +36,52 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Compute image tag
-        id: image_tag
+        id: image_info
         run: |
           SHORT_SHA="${GITHUB_SHA::12}"
-          echo "image_tag=sha-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          IMAGE_TAG="sha-${SHORT_SHA}"
+
+          if [ "$IS_MAIN_PUSH" = "true" ]; then
+            IMAGE_NAME="${{ secrets.ACR_LOGIN_SERVER }}/team3-back-app"
+            echo "verify_ref=${IMAGE_NAME}:${IMAGE_TAG}" >> "$GITHUB_OUTPUT"
+            {
+              echo 'tags<<EOF'
+              echo "${IMAGE_NAME}:${IMAGE_TAG}"
+              echo "${IMAGE_NAME}:latest"
+              echo 'EOF'
+            } >> "$GITHUB_OUTPUT"
+          else
+            IMAGE_NAME="team3-back-app"
+            echo "verify_ref=${IMAGE_NAME}:${IMAGE_TAG}" >> "$GITHUB_OUTPUT"
+            {
+              echo 'tags<<EOF'
+              echo "${IMAGE_NAME}:${IMAGE_TAG}"
+              echo 'EOF'
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Log in to Azure Container Registry
+        if: env.IS_MAIN_PUSH == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
 
       - name: Build Docker image
+        id: docker_build
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
-          push: false
-          load: true
-          tags: team3-back-app:${{ steps.image_tag.outputs.image_tag }}
+          push: ${{ env.IS_MAIN_PUSH == 'true' }}
+          load: ${{ env.IS_MAIN_PUSH != 'true' }}
+          tags: ${{ steps.image_info.outputs.tags }}
 
       - name: Verify built tag exists
-        run: docker image inspect team3-back-app:${{ steps.image_tag.outputs.image_tag }}
+        if: env.IS_MAIN_PUSH != 'true'
+        run: docker image inspect ${{ steps.image_info.outputs.verify_ref }}
+
+      - name: Verify image push digest
+        if: env.IS_MAIN_PUSH == 'true'
+        run: test -n "${{ steps.docker_build.outputs.digest }}"
