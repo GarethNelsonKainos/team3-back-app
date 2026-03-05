@@ -37,10 +37,18 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
-      - name: Build and push Docker image to ACR
+      - name: Build and push backend Docker image to ACR
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
           docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/team3-back-app:${{ github.sha }} .
           docker tag ${{ secrets.ACR_LOGIN_SERVER }}/team3-back-app:${{ github.sha }} ${{ secrets.ACR_LOGIN_SERVER }}/team3-back-app:latest
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/team3-back-app:${{ github.sha }}
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/team3-back-app:latest
+
+      - name: Build and push postgres Docker image to ACR
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/team3-postgres:${{ github.sha }} ./dockerfiles/postgres
+          docker tag ${{ secrets.ACR_LOGIN_SERVER }}/team3-postgres:${{ github.sha }} ${{ secrets.ACR_LOGIN_SERVER }}/team3-postgres:latest
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/team3-postgres:${{ github.sha }}
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/team3-postgres:latest

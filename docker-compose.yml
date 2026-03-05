@@ -17,4 +17,13 @@ services:
     depends_on:
       - backend
 
- 
+  postgres:
+    image: academyacrj3r5dv.azurecr.io/team3-postgres:latest
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+  
