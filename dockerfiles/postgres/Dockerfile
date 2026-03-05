@@ -1,0 +1,7 @@
+FROM postgres:16-alpine
+
+ENV POSTGRES_USER=academy
+ENV POSTGRES_PASSWORD=academy123
+ENV POSTGRES_DB=academy
+
+EXPOSE 5432
