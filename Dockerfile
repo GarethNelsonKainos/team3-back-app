@@ -1,30 +1,46 @@
-# syntax=docker/dockerfile:1.7
-
 FROM node:20-alpine AS build
+
 WORKDIR /app
-RUN apk add --no-cache openssl ca-certificates
 
 COPY package.json package-lock.json ./
-RUN --mount=type=cache,target=/root/.npm npm ci
+RUN npm ci
 
-COPY tsconfig.json tsup.config.ts prisma.config.ts ./
 COPY prisma ./prisma
-RUN NODE_TLS_REJECT_UNAUTHORIZED=0 DATABASE_URL="postgresql://tom@host.docker.internal:5432/kainos?schema=backend" npx prisma generate
+COPY prisma.config.ts ./
+COPY tsconfig.json tsup.config.ts ./
 COPY src ./src
-RUN npm run build
 
-# Keep only production dependencies
-RUN npm prune --omit=dev && npm cache clean --force
+# Generate Prisma client (dummy DATABASE_URL needed at codegen time only) and build the app
+RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate && npm run build
 
-FROM node:20-alpine AS runtime
+# Stage 2: Production
+FROM node:20-alpine
+
 WORKDIR /app
-ENV NODE_ENV=production
-RUN apk add --no-cache openssl ca-certificates
 
-COPY --from=build /app/node_modules ./node_modules
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
+# Copy Prisma schema, migrations, config, and seed for runtime migrate + seed
+COPY prisma ./prisma
+COPY prisma.config.ts ./
+
+# Copy full src (needed by seed.ts which imports from src/enums, src/utils etc via tsx)
+COPY src ./src
+
+# Copy generated Prisma client from build stage (overwrites placeholder)
+COPY --from=build /app/src/generated ./src/generated
+
+# Copy tsconfig (needed by tsx for seed)
+COPY tsconfig.json tsup.config.ts ./
+
+# Copy compiled app
 COPY --from=build /app/dist ./dist
-COPY package.json ./
 
-USER node
+# Install tsx for running seed.ts at startup
+RUN npm install tsx
+
 EXPOSE 3001
-CMD ["node", "dist/index.js"]
+
+# Start script: run migrations, seed, then start the app
+CMD sh -c "npx prisma migrate deploy && npx tsx prisma/seed.ts && node dist/index.js"
